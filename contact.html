@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact us | Brocks Den</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#f7f3ea;
+    --ivory:#f0f0ea;
+    --taupe:#7a6e63;
+    --ink:#1c1a16;
+    --muted:rgba(28,26,22,0.62);
+    --rule:rgba(28,26,22,0.12);
+    --red:#c13515;
+  }
+  *{margin:0; padding:0; box-sizing:border-box;}
+  body{
+    font-family:'Plus Jakarta Sans', sans-serif;
+    background:var(--ivory);
+    color:var(--ink);
+    min-height:100vh;
+  }
+  a{color:inherit;}
+  [hidden]{display:none !important;}
+
+  .top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    max-width:1120px;
+    margin:0 auto;
+    padding:22px 6%;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:700;
+    font-size:19px;
+    letter-spacing:-0.02em;
+    text-decoration:none;
+  }
+  .brand svg{width:26px; height:26px;}
+  .back{
+    font-size:14px;
+    font-weight:600;
+    text-decoration:none;
+    background-image:linear-gradient(currentColor, currentColor);
+    background-repeat:no-repeat;
+    background-position:0 100%;
+    background-size:0 1px;
+    transition:background-size .25s ease;
+  }
+  .back:hover{background-size:100% 1px;}
+
+  main{max-width:1120px; margin:0 auto; padding:8px 6% 80px;}
+  h1{
+    font-size:clamp(26px, 3.2vw, 36px);
+    font-weight:800;
+    letter-spacing:-0.02em;
+    line-height:1.15;
+  }
+  .intro{
+    max-width:560px;
+    margin:12px 0 32px;
+    font-size:16px;
+    line-height:1.65;
+    color:var(--muted);
+  }
+
+  .layout{
+    display:grid;
+    grid-template-columns:minmax(0, 1fr) 360px;
+    gap:48px;
+    align-items:start;
+  }
+
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .field{display:flex; flex-direction:column; gap:6px;}
+  .field.full{grid-column:1 / -1;}
+  label{font-size:13px; font-weight:600;}
+  .opt{font-weight:500; color:var(--muted);}
+  input, select, textarea{
+    width:100%;
+    padding:14px 14px;
+    border:1px solid rgba(28,26,22,0.28);
+    border-radius:12px;
+    background:#fff;
+    color:var(--ink);
+    font:500 15px/1.4 'Plus Jakarta Sans', sans-serif;
+  }
+  select{
+    appearance:none;
+    -webkit-appearance:none;
+    padding-right:42px;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231c1a16' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;
+    background-position:right 14px center;
+    background-size:16px;
+    cursor:pointer;
+  }
+  textarea{min-height:160px; resize:vertical;}
+  input:focus, select:focus, textarea:focus{outline:2px solid var(--ink); outline-offset:1px; border-color:transparent;}
+  input:user-invalid, select:user-invalid, textarea:user-invalid{border-color:var(--red); box-shadow:0 0 0 2px var(--red);}
+
+  /* spam trap: real visitors never see or fill this in */
+  .trap{position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;}
+
+  .notice{
+    margin-top:18px;
+    padding:14px 16px;
+    border-radius:12px;
+    background:var(--taupe);
+    border:2px solid var(--red);
+    color:var(--ivory);
+    font-size:14px;
+    line-height:1.5;
+  }
+
+  .submit{
+    margin-top:22px;
+    width:100%;
+    padding:17px 24px;
+    border:0;
+    border-radius:14px;
+    background:var(--ink);
+    color:var(--cream);
+    font:700 16px/1 'Plus Jakarta Sans', sans-serif;
+    cursor:pointer;
+    transition:background .2s ease;
+  }
+  .submit:hover{background:#31302b;}
+  .submit:focus-visible{outline:3px solid var(--ink); outline-offset:3px;}
+  .submit:disabled{opacity:0.6; cursor:default;}
+
+  /* side card */
+  .side{
+    background:var(--taupe);
+    color:var(--ivory);
+    border-radius:20px;
+    padding:24px;
+    box-shadow:0 12px 32px rgba(23,24,26,0.16);
+  }
+  .side h2{font-size:18px; font-weight:700; margin-bottom:12px;}
+  .side address{font-style:normal; font-size:15px; line-height:1.75; color:rgba(240,240,234,0.9);}
+  .side .rule{margin:20px 0; border:0; border-top:1px solid rgba(240,240,234,0.25);}
+  .side p{font-size:14px; line-height:1.6; color:rgba(240,240,234,0.82);}
+  .side a.link{
+    display:inline-block;
+    margin-top:12px;
+    font-size:14px;
+    font-weight:600;
+    color:var(--ivory);
+    text-decoration:underline;
+    text-underline-offset:3px;
+  }
+  .side a.link:focus-visible{outline:2px solid var(--ivory); outline-offset:3px; border-radius:2px;}
+
+  .btn{
+    display:inline-block;
+    padding:14px 22px;
+    border-radius:12px;
+    background:var(--ink);
+    color:var(--cream);
+    font-weight:700;
+    font-size:15px;
+    text-decoration:none;
+  }
+  .done{max-width:560px; padding:12px 0;}
+  .done h2{font-size:26px; font-weight:800; letter-spacing:-0.02em; margin-bottom:12px;}
+  .done p{font-size:15px; line-height:1.65; color:var(--muted); margin-bottom:22px;}
+
+  @media (max-width: 900px){
+    .layout{grid-template-columns:1fr; gap:32px;}
+  }
+  @media (max-width: 520px){
+    .grid2{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a class="brand" href="index.html">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 2L3 20H21L12 2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M12 2V20" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M7.5 12H16.5" stroke="currentColor" stroke-width="1.6"/>
+    </svg>
+    Brocks Den
+  </a>
+  <a class="back" href="index.html">&larr; Back to the site</a>
+</header>
+
+<main>
+  <div id="formView">
+    <h1>Contact us</h1>
+    <p class="intro">Have a question about Brocks Den, or want to know more before you book? Send us a message and we&rsquo;ll get back to you.</p>
+
+    <div class="layout">
+      <form id="enquiryForm" autocomplete="on">
+        <div class="grid2">
+          <div class="field">
+            <label for="fName">Your name</label>
+            <input id="fName" name="name" type="text" autocomplete="name" required>
+          </div>
+          <div class="field">
+            <label for="fPhone">Phone number <span class="opt">(optional)</span></label>
+            <input id="fPhone" name="phone" type="tel" autocomplete="tel">
+          </div>
+          <div class="field full">
+            <label for="fEmail">Email</label>
+            <input id="fEmail" name="email" type="email" autocomplete="email" required>
+          </div>
+          <div class="field full">
+            <label for="fTopic">What is your enquiry about?</label>
+            <select id="fTopic" name="topic" required>
+              <option value="" selected disabled>Choose a topic</option>
+              <option>Availability and dates</option>
+              <option>The yurt and what&rsquo;s included</option>
+              <option>Getting here and the local area</option>
+              <option>An existing reservation</option>
+              <option>Something else</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label for="fMsg">Your message</label>
+            <textarea id="fMsg" name="message" required minlength="10"></textarea>
+          </div>
+        </div>
+
+        <!-- spam trap -->
+        <div class="trap" aria-hidden="true">
+          <label for="fWebsite">Leave this empty</label>
+          <input id="fWebsite" name="website" type="text" tabindex="-1" autocomplete="off">
+        </div>
+
+        <div class="notice" id="notice" role="alert" hidden></div>
+        <button class="submit" id="submitBtn" type="submit">Send message</button>
+      </form>
+
+      <aside class="side" aria-label="Where to find us">
+        <h2>Find us</h2>
+        <address>
+          Brocks Den<br>
+          Great Argoed, Church Stoke<br>
+          Montgomery, SY15 6TH<br>
+          Wales
+        </address>
+        <a class="link" href="index.html#location">See the map and local walks</a>
+        <hr class="rule">
+        <p>Ready to book? Choose your dates and reserve now, with nothing to pay today.</p>
+        <a class="link" href="index.html">Choose your dates</a>
+      </aside>
+    </div>
+  </div>
+
+  <!-- shown once a message has gone through -->
+  <div class="done" id="done" hidden>
+    <h2>Message sent</h2>
+    <p id="doneMsg"></p>
+    <a class="btn" href="index.html">Back to the site</a>
+  </div>
+</main>
+
+<script>
+(function(){
+  // ---- settings ---------------------------------------------------------------------------
+  var SEND_ENABLED = true;    // messages go to /api/enquiries (the Cloudflare backend), which emails the owners
+  // ------------------------------------------------------------------------------------------
+
+  function $(id){ return document.getElementById(id); }
+
+  // ---- sending the enquiry ----------------------------------------------------------------
+  // Replace this with a call to the server function that emails the owners (the same one that
+  // will send the reservation emails). It must return a promise that resolves once the message
+  // has been passed on, and rejects with an Error if it could not be.
+  function sendEnquiry(data){
+    if(!SEND_ENABLED){
+      return Promise.reject(new Error('Messages are not switched on yet. This page is ready, but it is not connected to the owners’ email.'));
+    }
+    return fetch('/api/enquiries', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    }).then(function(res){
+      return res.json().catch(function(){ return null; }).then(function(body){
+        if(!res.ok || !body || !body.ok) throw new Error((body && body.error) || 'Something went wrong sending your message. Please try again.');
+        return body;
+      });
+    });
+  }
+
+  function showDone(name, email){
+    $('formView').hidden = true;
+    $('doneMsg').textContent = 'Thank you, ' + name + '. We’ve received your message and will reply to ' + email + '.';
+    $('done').hidden = false;
+    window.scrollTo(0, 0);
+  }
+
+  $('enquiryForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var f = e.target;
+    var notice = $('notice');
+    notice.hidden = true;
+
+    var data = {
+      name: f.elements['name'].value.trim(),
+      email: f.email.value.trim(),
+      phone: f.phone.value.trim(),
+      topic: f.topic.value,
+      message: f.message.value.trim()
+    };
+
+    // a bot filled in the hidden field: pretend it worked, send nothing
+    if(f.website.value){ showDone(data.name || 'there', data.email); return; }
+
+    var btn = $('submitBtn');
+    btn.disabled = true;
+    sendEnquiry(data).then(function(){
+      showDone(data.name, data.email);
+    }).catch(function(err){
+      notice.textContent = err.message;
+      notice.hidden = false;
+      btn.disabled = false;
+    });
+  });
+})();
+</script>
+</body>
+</html>

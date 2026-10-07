@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reserve now, pay later | Brocks Den</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#f7f3ea;
+    --ivory:#f0f0ea;
+    --taupe:#7a6e63;
+    --ink:#1c1a16;
+    --muted:rgba(28,26,22,0.62);
+    --rule:rgba(28,26,22,0.12);
+    --red:#c13515;
+  }
+  *{margin:0; padding:0; box-sizing:border-box;}
+  body{
+    font-family:'Plus Jakarta Sans', sans-serif;
+    background:var(--ivory);
+    color:var(--ink);
+    min-height:100vh;
+  }
+  a{color:inherit;}
+  [hidden]{display:none !important;}
+
+  .top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    max-width:1120px;
+    margin:0 auto;
+    padding:22px 6%;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:700;
+    font-size:19px;
+    letter-spacing:-0.02em;
+    text-decoration:none;
+  }
+  .brand svg{width:26px; height:26px;}
+  .back{
+    font-size:14px;
+    font-weight:600;
+    text-decoration:none;
+    background-image:linear-gradient(currentColor, currentColor);
+    background-repeat:no-repeat;
+    background-position:0 100%;
+    background-size:0 1px;
+    transition:background-size .25s ease;
+  }
+  .back:hover{background-size:100% 1px;}
+
+  main{max-width:1120px; margin:0 auto; padding:8px 6% 80px;}
+  h1{
+    font-size:clamp(26px, 3.2vw, 36px);
+    font-weight:800;
+    letter-spacing:-0.02em;
+    line-height:1.15;
+    margin-bottom:28px;
+  }
+
+  .layout{
+    display:grid;
+    grid-template-columns:minmax(0, 1fr) 380px;
+    gap:48px;
+    align-items:start;
+  }
+
+  .block{padding:28px 0; border-top:1px solid var(--rule);}
+  .block:first-child{border-top:0; padding-top:0;}
+  .block h2{font-size:20px; font-weight:700; letter-spacing:-0.01em; margin-bottom:18px;}
+
+  .stay-row{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:16px;
+    padding:14px 0;
+  }
+  .stay-row + .stay-row{border-top:1px solid var(--rule);}
+  .stay-label{font-size:14px; font-weight:700;}
+  .stay-value{margin-top:3px; font-size:15px; color:var(--muted);}
+  .edit{font-size:14px; font-weight:600; text-decoration:underline; text-underline-offset:3px;}
+
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .field{display:flex; flex-direction:column; gap:6px;}
+  .field.full{grid-column:1 / -1;}
+  label{font-size:13px; font-weight:600;}
+  .opt{font-weight:500; color:var(--muted);}
+  input, textarea{
+    width:100%;
+    padding:14px 14px;
+    border:1px solid rgba(28,26,22,0.28);
+    border-radius:12px;
+    background:#fff;
+    color:var(--ink);
+    font:500 15px/1.4 'Plus Jakarta Sans', sans-serif;
+  }
+  textarea{min-height:110px; resize:vertical;}
+  input:focus, textarea:focus{outline:2px solid var(--ink); outline-offset:1px; border-color:transparent;}
+  input:user-invalid, textarea:user-invalid{border-color:var(--red); box-shadow:0 0 0 2px var(--red);}
+
+  .note{margin-top:14px; font-size:13px; line-height:1.55; color:var(--muted);}
+
+  .notice{
+    margin-top:18px;
+    padding:14px 16px;
+    border-radius:12px;
+    background:var(--taupe);
+    border:2px solid var(--red);
+    color:var(--ivory);
+    font-size:14px;
+    line-height:1.5;
+  }
+
+  .submit{
+    margin-top:22px;
+    width:100%;
+    padding:17px 24px;
+    border:0;
+    border-radius:14px;
+    background:var(--ink);
+    color:var(--cream);
+    font:700 16px/1 'Plus Jakarta Sans', sans-serif;
+    cursor:pointer;
+    transition:background .2s ease, transform .15s ease;
+  }
+  .submit:hover{background:#31302b;}
+  .submit:focus-visible{outline:3px solid var(--ink); outline-offset:3px;}
+  .submit:disabled{opacity:0.6; cursor:default;}
+
+  /* summary */
+  .summary{
+    position:sticky;
+    top:20px;
+    background:var(--taupe);
+    color:var(--ivory);
+    border-radius:20px;
+    padding:20px;
+    box-shadow:0 12px 32px rgba(23,24,26,0.16);
+    --summary-rule:rgba(240,240,234,0.25);
+    --summary-muted:rgba(240,240,234,0.78);
+  }
+  .summary-top{display:flex; gap:14px; padding-bottom:18px; border-bottom:1px solid var(--summary-rule);}
+  .summary-top img{width:112px; height:96px; border-radius:12px; object-fit:cover; flex-shrink:0;}
+  .summary-name{font-size:16px; font-weight:700; line-height:1.3;}
+  .summary-sub{margin-top:4px; font-size:13px; color:var(--summary-muted); line-height:1.45;}
+  .summary-rating{margin-top:8px; font-size:13px; font-weight:600;}
+  .summary h2{margin:18px 0 12px; font-size:18px; font-weight:700;}
+  .line{display:flex; justify-content:space-between; gap:12px; padding:6px 0; font-size:15px;}
+  .line span:first-child{color:var(--summary-muted);}
+  .line.total{margin-top:10px; padding-top:16px; border-top:1px solid var(--summary-rule); font-weight:800;}
+  .line.total span:first-child{color:var(--ivory);}
+  .pay-later{margin-top:8px; font-size:13px; color:var(--summary-muted);}
+
+  /* cancellation */
+  .cancel{padding:16px 0 4px; border-bottom:1px solid var(--summary-rule); padding-bottom:18px;}
+  .cancel-title{font-size:15px; font-weight:700;}
+  .cancel-text{margin-top:4px; font-size:14px; line-height:1.5; color:var(--summary-muted);}
+  .policy-link{
+    margin-top:10px;
+    padding:0;
+    border:0;
+    background:transparent;
+    color:var(--ivory);
+    font:600 14px/1.4 'Plus Jakarta Sans', sans-serif;
+    text-decoration:underline;
+    text-underline-offset:3px;
+    cursor:pointer;
+  }
+  .policy-link:hover{opacity:0.85;}
+  .policy-link:focus-visible{outline:2px solid var(--ivory); outline-offset:3px; border-radius:2px;}
+
+  dialog.policy{
+    width:min(480px, calc(100vw - 32px));
+    margin:auto;
+    padding:28px;
+    border:0;
+    border-radius:20px;
+    background:var(--taupe);
+    color:var(--ivory);
+    box-shadow:0 20px 60px rgba(0,0,0,0.35);
+  }
+  dialog.policy::backdrop{background:rgba(23,24,26,0.55);}
+  .policy-head{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:6px;}
+  .policy-head h2{font-size:22px; font-weight:800; letter-spacing:-0.02em;}
+  .policy-close{
+    width:36px;
+    height:36px;
+    flex-shrink:0;
+    padding:0;
+    border:0;
+    border-radius:50%;
+    background:rgba(240,240,234,0.16);
+    color:var(--ivory);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+  }
+  .policy-close:hover{background:rgba(240,240,234,0.28);}
+  .policy-close:focus-visible{outline:2px solid var(--ivory); outline-offset:2px;}
+  .policy-close svg{width:16px; height:16px;}
+  .policy-item{padding:18px 0; border-top:1px solid rgba(240,240,234,0.25);}
+  .policy-item:first-of-type{margin-top:14px;}
+  .policy-item h3{font-size:16px; font-weight:700;}
+  .policy-when{margin-top:2px; font-size:14px; color:rgba(240,240,234,0.78);}
+  .policy-what{margin-top:8px; font-size:15px; line-height:1.55;}
+
+  .empty{
+    max-width:520px;
+    padding:28px;
+    background:var(--taupe);
+    color:var(--ivory);
+    border-radius:20px;
+  }
+  .empty p{margin:8px 0 20px; font-size:15px; line-height:1.6; color:rgba(240,240,234,0.82);}
+  .btn{
+    display:inline-block;
+    padding:14px 22px;
+    border-radius:12px;
+    background:var(--ink);
+    color:var(--cream);
+    font-weight:700;
+    font-size:15px;
+    text-decoration:none;
+  }
+
+  .done{max-width:560px; padding:12px 0;}
+  .done h2{font-size:26px; font-weight:800; letter-spacing:-0.02em; margin-bottom:12px;}
+  .done p{font-size:15px; line-height:1.65; color:var(--muted); margin-bottom:22px;}
+
+  @media (max-width: 900px){
+    .layout{grid-template-columns:1fr; gap:28px;}
+    .summary{position:static; order:-1;}
+  }
+  @media (max-width: 520px){
+    .grid2{grid-template-columns:1fr;}
+    .summary-top img{width:92px; height:80px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a class="brand" href="index.html">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 2L3 20H21L12 2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M12 2V20" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M7.5 12H16.5" stroke="currentColor" stroke-width="1.6"/>
+    </svg>
+    Brocks Den
+  </a>
+  <a class="back" href="index.html">&larr; Back to the site</a>
+</header>
+
+<main>
+  <h1 id="pageTitle">Reserve now, pay later</h1>
+
+  <!-- shown when no valid dates were passed in -->
+  <div class="empty" id="empty" hidden>
+    <h2 style="font-size:20px;font-weight:700;">Choose your dates first</h2>
+    <p id="emptyMsg">Pick your check-in and check-out dates on the main page, then press Reserve now.</p>
+    <a class="btn" href="index.html">Choose dates</a>
+  </div>
+
+  <div class="layout" id="layout" hidden>
+    <div>
+      <section class="block">
+        <h2>Your stay</h2>
+        <div class="stay-row">
+          <div><div class="stay-label">Dates</div><div class="stay-value" id="vDates"></div></div>
+          <a class="edit" href="index.html">Change</a>
+        </div>
+        <div class="stay-row">
+          <div><div class="stay-label">Guests</div><div class="stay-value" id="vGuests"></div></div>
+          <a class="edit" href="index.html">Change</a>
+        </div>
+      </section>
+
+      <section class="block" id="formBlock">
+        <h2>Your details</h2>
+        <form id="bookForm" autocomplete="on">
+          <div class="grid2">
+            <div class="field">
+              <label for="fFirst">First name</label>
+              <input id="fFirst" name="first" type="text" autocomplete="given-name" required>
+            </div>
+            <div class="field">
+              <label for="fLast">Last name</label>
+              <input id="fLast" name="last" type="text" autocomplete="family-name" required>
+            </div>
+            <div class="field full">
+              <label for="fEmail">Email</label>
+              <input id="fEmail" name="email" type="email" autocomplete="email" required>
+            </div>
+            <div class="field full">
+              <label for="fPhone">Phone number</label>
+              <input id="fPhone" name="phone" type="tel" autocomplete="tel" required>
+            </div>
+            <div class="field full">
+              <label for="fMsg">Anything we should know? <span class="opt">(optional)</span></label>
+              <textarea id="fMsg" name="message"></textarea>
+            </div>
+          </div>
+
+          <p class="note">Reserve now and pay later. No payment is taken today, and the hosts will be in touch about paying.</p>
+          <div class="notice" id="notice" role="alert" hidden></div>
+          <button class="submit" id="submitBtn" type="submit">Reserve now, pay later</button>
+        </form>
+      </section>
+    </div>
+
+    <aside class="summary" aria-label="Booking summary">
+      <div class="summary-top">
+        <img src="assets/images/hero-2.avif" width="224" height="192" alt="Brocks Den yurt on its hilltop above the misty valley">
+        <div>
+          <div class="summary-name">Brocks Den yurt</div>
+          <div class="summary-sub">Great Argoed, Church Stoke, Montgomery, Wales</div>
+          <div class="summary-rating">&#9733; 5.0 &middot; 268 reviews</div>
+        </div>
+      </div>
+      <div class="cancel">
+        <div class="cancel-title">Free cancellation</div>
+        <p class="cancel-text">Cancel before <span id="cancelBy"></span> for a full refund.</p>
+        <button type="button" class="policy-link" id="policyBtn">Cancellation policy</button>
+      </div>
+
+      <h2>Your booking</h2>
+      <div class="line"><span>Check-in</span><span id="sIn"></span></div>
+      <div class="line"><span>Check-out</span><span id="sOut"></span></div>
+      <div class="line"><span>Nights</span><span id="sNights"></span></div>
+      <div class="line"><span>Guests</span><span id="sGuests"></span></div>
+      <div id="priceBlock">
+        <div class="line"><span id="pCalc"></span><span id="pSub"></span></div>
+        <div class="line total"><span>Total (GBP)</span><span id="pTotal"></span></div>
+        <p class="pay-later">Nothing to pay today.</p>
+      </div>
+    </aside>
+  </div>
+
+  <dialog class="policy" id="policyDialog" aria-labelledby="policyTitle">
+    <div class="policy-head">
+      <h2 id="policyTitle">Cancellation policy</h2>
+      <button type="button" class="policy-close" id="policyClose" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="policy-item">
+      <h3>Full refund</h3>
+      <div class="policy-when">Up to 15:00 on <span id="policyFullBy"></span></div>
+      <p class="policy-what">Get back 100% of what you paid.</p>
+    </div>
+    <div class="policy-item">
+      <h3>Partial refund</h3>
+      <div class="policy-when">Before 15:00 on <span id="policyPartialBy"></span> (check-in day)</div>
+      <p class="policy-what">Get back every night but the first one. No refund of the first night.</p>
+    </div>
+  </dialog>
+
+  <!-- shown once a request has gone through -->
+  <div class="done" id="done" hidden>
+    <h2>Reservation received</h2>
+    <p id="doneMsg"></p>
+    <a class="btn" href="index.html">Back to the site</a>
+  </div>
+</main>
+
+<script>
+(function(){
+  // ---- settings ---------------------------------------------------------------------------
+  var MIN_NIGHTS = 2;
+  var MAX_GUESTS = 2;
+  var PRICE_WEEKNIGHT = 152.5;  // GBP per night, Sunday to Thursday nights
+  var PRICE_WEEKEND = 187.5;    // GBP per night, weekend nights
+  var WEEKEND_NIGHTS = [5, 6];  // which nights take the weekend price: 5 = Friday night, 6 = Saturday night
+  var SEND_ENABLED = true;      // the reservation goes to /api/reservations (the Cloudflare backend)
+  // ------------------------------------------------------------------------------------------
+
+  function $(id){ return document.getElementById(id); }
+  function parse(k){ var p = String(k).split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function isKey(k){ return /^\d{4}-\d{2}-\d{2}$/.test(k || ''); }
+  function nights(a, b){ return Math.round((parse(b) - parse(a)) / 86400000); }
+  function fmt(k){ return parse(k).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }); }
+  function addDays(k, n){ var d = parse(k); d.setDate(d.getDate() + n); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+  function fmtDay(k){ return parse(k).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }); }
+  function fmtShort(k){ return parse(k).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }); }
+  function money(n){ return '£' + n.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+  // price every night of the stay; a night is named by the day it starts on
+  function priceStay(a, b){
+    var total = 0, weekend = 0, week = 0;
+    var d = parse(a), last = parse(b);
+    while(d < last){
+      if(WEEKEND_NIGHTS.indexOf(d.getDay()) !== -1){ total += PRICE_WEEKEND; weekend++; }
+      else { total += PRICE_WEEKNIGHT; week++; }
+      d.setDate(d.getDate() + 1);
+    }
+    return { total: total, weekend: weekend, week: week };
+  }
+
+  // dates arrive in the address (?checkin=...&checkout=...&guests=...), or from the saved choice
+  var q = new URLSearchParams(location.search);
+  var saved = {};
+  try { saved = JSON.parse(sessionStorage.getItem('brocksBooking') || '{}') || {}; } catch(e){}
+  var start = q.get('checkin') || saved.start;
+  var end = q.get('checkout') || saved.end;
+  var guests = parseInt(q.get('guests') || saved.guests || MAX_GUESTS, 10);
+
+  var now = new Date();
+  var todayKey = now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2);
+
+  var problem = null;
+  if(!isKey(start) || !isKey(end)) problem = 'Pick your check-in and check-out dates on the main page, then press Reserve now.';
+  else if(start < todayKey) problem = 'That check-in date has already passed. Please choose new dates.';
+  else if(nights(start, end) < MIN_NIGHTS) problem = 'The minimum stay is ' + MIN_NIGHTS + ' nights. Please choose new dates.';
+
+  if(problem){
+    $('emptyMsg').textContent = problem;
+    $('empty').hidden = false;
+    return;
+  }
+  if(!(guests >= 1)) guests = 1;
+  if(guests > MAX_GUESTS) guests = MAX_GUESTS;
+
+  var n = nights(start, end);
+  var guestTxt = guests + (guests === 1 ? ' guest' : ' guests');
+  var nightsTxt = n + (n === 1 ? ' night' : ' nights');
+
+  $('vDates').textContent = fmt(start) + ' to ' + fmt(end);
+  $('vGuests').textContent = guestTxt;
+  $('sIn').textContent = fmt(start);
+  $('sOut').textContent = fmt(end);
+  $('sNights').textContent = n;
+  $('sGuests').textContent = guests;
+
+  // cancellation: full refund up to 15:00 the day before check-in, partial refund before 15:00 on check-in day
+  var dayBefore = addDays(start, -1);
+  $('cancelBy').textContent = fmtDay(dayBefore);
+  $('policyFullBy').textContent = fmt(dayBefore);
+  $('policyPartialBy').textContent = fmt(start);
+
+  var policyDialog = $('policyDialog');
+  $('policyBtn').addEventListener('click', function(){ policyDialog.showModal(); });
+  $('policyClose').addEventListener('click', function(){ policyDialog.close(); });
+  policyDialog.addEventListener('click', function(e){
+    // a click outside the box itself (on the dimmed page) closes it
+    var r = policyDialog.getBoundingClientRect();
+    if(e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) policyDialog.close();
+  });
+
+  var price = priceStay(start, end);
+  var average = price.total / n;
+  var nightly;
+  if(price.weekend === 0 || price.week === 0){
+    // every night is the same rate
+    nightly = average;
+    $('pCalc').textContent = nightsTxt + ' × ' + money(nightly);
+  } else {
+    // weekday and weekend nights mixed: charge the average per night, rounded to a whole pound
+    nightly = Math.round(average);
+    $('pCalc').textContent = nightsTxt + ' × £' + nightly;
+  }
+  // the total is always exactly the nightly price times the number of nights
+  price.total = nightly * n;
+  $('pSub').textContent = money(price.total);
+  $('pTotal').textContent = money(price.total);
+  $('layout').hidden = false;
+
+  // keep the choice so the main page shows it again if the guest goes back
+  try { sessionStorage.setItem('brocksBooking', JSON.stringify({ start: start, end: end, guests: guests })); } catch(e){}
+
+  // ---- sending the reservation --------------------------------------------------------------
+  // Replace this with a call to the owner dashboard's reservation endpoint once it exists.
+  // It must return a promise that resolves when the reservation has been saved.
+  function sendReservation(data){
+    if(!SEND_ENABLED){
+      return Promise.reject(new Error('Reservations are not switched on yet. This page is ready, but it is not connected to the owner dashboard.'));
+    }
+    return fetch('/api/reservations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    }).then(function(res){
+      return res.json().catch(function(){ return null; }).then(function(body){
+        if(!res.ok || !body || !body.ok) throw new Error((body && body.error) || 'Something went wrong sending your reservation. Please try again.');
+        return body;
+      });
+    });
+  }
+
+  $('bookForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var f = e.target;
+    var notice = $('notice');
+    notice.hidden = true;
+    var btn = $('submitBtn');
+    btn.disabled = true;
+    var data = {
+      checkin: start, checkout: end, nights: n, guests: guests,
+      total: price.total, nightlyRate: nightly, payment: 'pay later',
+      firstName: f.first.value.trim(), lastName: f.last.value.trim(),
+      email: f.email.value.trim(), phone: f.phone.value.trim(),
+      message: f.message.value.trim()
+    };
+    sendReservation(data).then(function(reply){
+      $('layout').hidden = true;
+      $('pageTitle').hidden = true;
+      // the server works out the real total, so show its figure and reference
+      var total = (reply && typeof reply.total === 'number') ? reply.total : price.total;
+      var ref = reply && reply.ref ? ' Your reference is ' + reply.ref + '.' : '';
+      var follow = (reply && reply.emailSent)
+        ? ' A confirmation email is on its way to ' + data.email + '.'
+        : ' We’ll be in touch at ' + data.email + ' about paying.';
+      $('doneMsg').textContent = 'Thank you, ' + data.firstName + '. We’ve received your reservation for ' + fmtShort(start) + ' to ' + fmtShort(end) +
+        ' (' + nightsTxt + ', ' + guestTxt + '), total ' + money(total) + '.' + ref + ' No payment has been taken.' + follow;
+      $('done').hidden = false;
+      try { sessionStorage.removeItem('brocksBooking'); } catch(e){}
+      window.scrollTo(0, 0);
+    }).catch(function(err){
+      notice.textContent = err.message;
+      notice.hidden = false;
+      btn.disabled = false;
+    });
+  });
+})();
+</script>
+</body>
+</html>

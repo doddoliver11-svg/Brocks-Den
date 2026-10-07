@@ -1,0 +1,3374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brocks Den | Yurt Glamping in the Welsh Marches</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+  :root{
+    --cream:#f7f3ea;
+    --ivory:#f0f0ea;
+    --taupe:#7a6e63;
+    --charcoal:#17181a;
+    --ink:#1c1a16;
+    --line:rgba(247,243,234,0.55);
+    --glass:rgba(28,26,22,0.28);
+    --glass-strong:rgba(20,18,15,0.42);
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+
+  body{
+    font-family:'Plus Jakarta Sans', sans-serif;
+    background:var(--ivory);
+    color:var(--ink);
+  }
+
+  .hero{
+    position:relative;
+    width:100%;
+    padding:14px;
+  }
+
+  .hero-frame{
+    position:relative;
+    width:100%;
+    min-height:max(600px, calc(100vh - 14px));
+    min-height:max(600px, calc(100svh - 14px));
+    border-radius:28px;
+    border:2px solid var(--line);
+    overflow:hidden;
+    isolation:isolate;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .hero-bg{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:65% 60%;
+    z-index:-3;
+  }
+
+  .hero-tint{
+    position:absolute;
+    inset:0;
+    z-index:-2;
+    background:#0a1730;
+    mix-blend-mode:multiply;
+    opacity:0.16;
+  }
+
+  .hero-overlay{
+    position:absolute;
+    inset:0;
+    z-index:-1;
+    background:
+      radial-gradient(120% 90% at 12% 100%, rgba(4,7,14,0.58) 0%, rgba(4,7,14,0.3) 38%, rgba(4,7,14,0) 62%),
+      linear-gradient(180deg, rgba(3,6,14,0.34) 0%, rgba(3,6,14,0.04) 24%, rgba(3,6,14,0.04) 55%, rgba(3,6,14,0.46) 100%),
+      linear-gradient(90deg, rgba(3,6,14,0.2) 0%, rgba(3,6,14,0) 42%);
+  }
+
+  /* ---------- Nav ---------- */
+  .nav{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:22px 28px;
+    color:var(--cream);
+    flex-shrink:0;
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:700;
+    font-size:19px;
+    letter-spacing:-0.02em;
+  }
+
+  .brand svg{width:26px;height:26px;flex-shrink:0;}
+
+  .nav-links{
+    display:flex;
+    align-items:center;
+    gap:4px;
+    background:var(--glass);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:6px;
+  }
+
+  .nav-links a{
+    color:var(--cream);
+    text-decoration:none;
+    font-size:14px;
+    font-weight:500;
+    padding:10px 18px;
+    border-radius:999px;
+    opacity:0.9;
+    transition:background .2s ease, opacity .2s ease;
+    white-space:nowrap;
+  }
+
+  .nav-links a.active{
+    background:rgba(247,243,234,0.16);
+    opacity:1;
+  }
+
+  .nav-links a:hover{opacity:1;}
+
+  .nav-right{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+
+  .btn-ghost{
+    color:var(--cream);
+    background:var(--glass);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    border:1px solid var(--line);
+    padding:12px 20px;
+    border-radius:999px;
+    font-size:14px;
+    font-weight:500;
+    text-decoration:none;
+    white-space:nowrap;
+  }
+
+  .btn-solid{
+    background:var(--cream);
+    color:var(--ink);
+    padding:12px 22px;
+    border-radius:999px;
+    font-size:14px;
+    font-weight:700;
+    text-decoration:none;
+    white-space:nowrap;
+    border:1px solid var(--cream);
+  }
+
+  /* ---------- Body layout ---------- */
+  .hero-body{
+    position:relative;
+    z-index:1;
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+    gap:26px;
+    padding:0 6% 150px 6%;
+    min-height:0;
+  }
+
+  /* ---------- Content ---------- */
+  .content{
+    color:var(--cream);
+    max-width:520px;
+    text-shadow:0 1px 16px rgba(0,0,0,0.4);
+  }
+
+  .eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-size:13px;
+    font-weight:600;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    opacity:0.85;
+    margin-bottom:16px;
+  }
+
+  .eyebrow svg{width:14px;height:14px;}
+
+  .headline{
+    font-size:clamp(28px, 3.6vw, 44px);
+    line-height:1.18;
+    font-weight:800;
+    letter-spacing:-0.02em;
+  }
+
+  /* ---------- Booking bar ---------- */
+  .booking-bar{
+    display:flex;
+    align-items:stretch;
+    gap:10px;
+    background:var(--glass-strong);
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:8px;
+    width:fit-content;
+    max-width:100%;
+  }
+
+  .field{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    padding:9px 16px;
+    border-radius:999px;
+    color:var(--cream);
+    cursor:pointer;
+  }
+
+  .field:hover{background:rgba(247,243,234,0.08);}
+
+  .field svg{width:16px;height:16px;opacity:0.85;flex-shrink:0;}
+
+  .field .lbl{display:flex;flex-direction:column;line-height:1.2;}
+  .field .lbl span{font-size:10.5px;opacity:0.7;font-weight:500;}
+  button.field{
+    background:transparent;
+    border:0;
+    font:inherit;
+    text-align:left;
+  }
+  .field:focus-visible{outline:2px solid var(--cream); outline-offset:2px;}
+  .field[aria-expanded="true"]{background:rgba(247,243,234,0.18);}
+  .field .lbl .val{
+    display:block;
+    min-width:88px;
+    font-size:13px;
+    font-weight:600;
+    white-space:nowrap;
+  }
+  .field .lbl .val.is-empty{font-weight:500; opacity:0.75;}
+
+  .field .chev{margin-left:2px;opacity:0.6;}
+
+  .divider{width:1px;background:rgba(247,243,234,0.2);margin:6px 0;}
+
+  /* ---------- CTA row ---------- */
+  .cta-row{
+    display:flex;
+    align-items:center;
+    gap:14px;
+  }
+
+  .btn-primary{
+    background:var(--cream);
+    color:var(--ink);
+    border:none;
+    padding:15px 26px;
+    border-radius:999px;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+    font-family:inherit;
+  }
+
+  .btn-outline{
+    background:transparent;
+    color:var(--cream);
+    border:1px solid var(--line);
+    padding:15px 24px;
+    border-radius:999px;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    font-family:inherit;
+  }
+
+  /* ---------- Tag cluster ---------- */
+  .tag-cluster{
+    position:absolute;
+    right:6%;
+    bottom:64px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+
+  .pill-tag{
+    background:var(--glass-strong);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    border:1px solid var(--line);
+    color:var(--cream);
+    font-size:13px;
+    font-weight:600;
+    padding:12px 20px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
+
+  .pill-tag.rotate{
+    transform:rotate(-8deg);
+    background:rgba(247,243,234,0.94);
+    color:var(--ink);
+    padding:14px 22px;
+  }
+
+  /* ---------- Features section ---------- */
+  .features{
+    position:relative;
+    color:var(--ink);
+    padding:56px 6% 112px;
+    background:radial-gradient(50% 60% at 50% 58%, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0) 70%), var(--ivory);
+  }
+
+  .features-title{
+    text-align:center;
+    font-size:clamp(28px, 3.4vw, 42px);
+    font-weight:800;
+    letter-spacing:-0.02em;
+    line-height:1.15;
+    margin-bottom:16px;
+  }
+
+  .features-orbit{display:flex; justify-content:center;}
+
+  @media (max-width: 860px){
+    .features{padding:44px 6% 100px;}
+    .features-title{margin-bottom:12px;}
+  }
+
+  /* ---------- Live orbital amenities showcase ----------
+     --s scales the orbit geometry, --t its icons/labels, --cs the detail cards. */
+  .orbit-live{
+    --s:1.4;
+    --t:1.4;
+    --cs:1.4;
+    position:relative;
+    z-index:5;
+    flex-shrink:0;
+    display:flex;
+    justify-content:center;
+    padding:8px 0 0;
+  }
+
+  @media (max-width: 860px){
+    .orbit-live{--s:1.15; --t:1.15; --cs:1.1;}
+  }
+
+  @media (max-width: 620px){
+    .orbit-live{--s:0.85; --t:1.1; --cs:1;}
+  }
+
+  .orbital-stage{
+    position:relative;
+    width:calc(300px * var(--s));
+    height:calc(300px * var(--s));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .orbital-photo{
+    position:absolute;
+    inset:calc(60px * var(--s));
+    border-radius:50%;
+    overflow:hidden;
+    border:1px solid rgba(28,26,22,0.18);
+    box-shadow:0 14px 36px rgba(28,26,22,0.28);
+    z-index:5;
+  }
+
+  .orbital-photo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
+
+  .orbital-nodes{position:absolute; inset:0;}
+
+  .orbital-node{
+    position:absolute;
+    top:50%;
+    left:50%;
+    cursor:pointer;
+    transition:transform .6s ease, opacity .6s ease;
+  }
+
+  .orbital-node-dot{
+    width:calc(30px * var(--t));
+    height:calc(30px * var(--t));
+    margin-left:calc(-15px * var(--t));
+    margin-top:calc(-15px * var(--t));
+    border-radius:50%;
+    background:var(--ink);
+    border:1.5px solid rgba(28,26,22,0.35);
+    color:var(--cream);
+    box-shadow:0 4px 12px rgba(28,26,22,0.22);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:all .3s ease;
+  }
+
+  .orbital-node-dot svg{width:calc(12px * var(--t)); height:calc(12px * var(--t));}
+
+  .orbital-node.expanded .orbital-node-dot{
+    background:var(--ink);
+    color:var(--cream);
+    border-color:var(--ink);
+    transform:scale(1.4);
+    box-shadow:0 0 0 6px rgba(28,26,22,0.14);
+  }
+
+  .orbital-node.related .orbital-node-dot{
+    background:#5b564b;
+    color:var(--cream);
+    border-color:var(--ink);
+  }
+
+  .orbital-node-label{
+    position:absolute;
+    top:calc(24px * var(--t));
+    left:50%;
+    transform:translateX(-50%);
+    white-space:nowrap;
+    font-size:calc(9.5px * var(--t));
+    font-weight:600;
+    letter-spacing:0.03em;
+    color:rgba(28,26,22,0.8);
+  }
+
+  .orbital-node.expanded .orbital-node-label{color:var(--ink);}
+
+  .orbital-card{
+    position:absolute;
+    top:calc(42px * var(--t));
+    left:50%;
+    transform:translateX(-50%);
+    width:calc(240px * var(--cs));
+    background:rgba(4,6,10,0.95);
+    border:1px solid rgba(247,243,234,0.25);
+    border-radius:calc(14px * var(--cs));
+    overflow:hidden;
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    box-shadow:0 20px 40px rgba(0,0,0,0.5);
+    z-index:20;
+    cursor:default;
+    text-align:left;
+  }
+
+  .orbital-card-media{
+    width:100%;
+    height:calc(110px * var(--cs));
+    background-size:cover;
+    background-position:center;
+  }
+
+  .orbital-card-body{
+    padding:calc(14px * var(--cs)) calc(16px * var(--cs)) calc(16px * var(--cs));
+  }
+
+  .orbital-card::before{
+    content:"";
+    position:absolute;
+    top:-8px;
+    left:50%;
+    transform:translateX(-50%);
+    width:1px;
+    height:8px;
+    background:rgba(247,243,234,0.4);
+  }
+
+  .orbital-card-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:calc(10px * var(--cs));
+    gap:8px;
+  }
+
+  .orbital-badge{
+    font-size:calc(10px * var(--cs));
+    font-weight:700;
+    letter-spacing:0.04em;
+    padding:calc(3px * var(--cs)) calc(8px * var(--cs));
+    border-radius:999px;
+    border:1px solid;
+    white-space:nowrap;
+  }
+
+  .orbital-badge.included{background:var(--cream); color:#0a0e18; border-color:var(--cream);}
+  .orbital-badge.seasonal{background:rgba(4,6,10,0.4); color:var(--cream); border-color:rgba(247,243,234,0.5);}
+
+  .orbital-card-tag{font-size:calc(10px * var(--cs)); color:rgba(247,243,234,0.65); font-family:monospace; text-shadow:0 1px 3px rgba(0,0,0,0.7);}
+
+  .orbital-card-title{font-size:calc(14px * var(--cs)); font-weight:700; color:var(--cream); margin-bottom:calc(8px * var(--cs)); text-shadow:0 1px 4px rgba(0,0,0,0.6);}
+
+  .orbital-card-content{font-size:calc(12px * var(--cs)); line-height:1.5; color:rgba(247,243,234,0.85); text-shadow:0 1px 3px rgba(0,0,0,0.5);}
+
+  .orbital-features{margin-top:calc(12px * var(--cs)); padding-top:calc(10px * var(--cs)); border-top:1px solid rgba(247,243,234,0.18);}
+
+  .orbital-features-label{
+    font-size:calc(10px * var(--cs));
+    font-weight:700;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--ivory);
+    margin-bottom:calc(8px * var(--cs));
+  }
+
+  .orbital-features-list{display:flex; flex-wrap:wrap; gap:calc(6px * var(--cs));}
+
+  .orbital-feature-tag{
+    font-size:calc(11px * var(--cs));
+    padding:calc(4px * var(--cs)) calc(9px * var(--cs));
+    border-radius:6px;
+    border:1px solid rgba(247,243,234,0.25);
+    background:rgba(247,243,234,0.06);
+    color:rgba(247,243,234,0.9);
+    font-family:inherit;
+  }
+
+  @media (max-width:480px){
+    .orbital-card{width:76vw;}
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 1180px){
+    .nav-links{display:none;}
+    .content{max-width:100%;}
+    .hero-body{height:auto; padding-bottom:110px;}
+    .tag-cluster{
+      right:6%;
+      left:6%;
+      bottom:26px;
+      justify-content:flex-start;
+      flex-wrap:wrap;
+    }
+  }
+
+  @media (max-width: 620px){
+    .hero{padding:8px;}
+    .hero-frame{border-radius:22px; min-height:max(560px, calc(100vh - 8px)); min-height:max(560px, calc(100svh - 8px));}
+    .nav{padding:16px;}
+    .nav-right .btn-ghost{display:none;}
+    .hero-body{padding-left:6%; padding-right:6%; padding-bottom:130px;}
+    .headline{font-size:26px;}
+    .booking-bar{flex-wrap:wrap; border-radius:22px;}
+    .divider{display:none;}
+    .field{width:100%;}
+    .orbital-stage{width:200px; height:200px;}
+    .orbital-photo{inset:40px;}
+    .orbit-live{padding-bottom:60px;}
+  }
+
+  /* ---------- Gallery ---------- */
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} }
+
+  .gallery{
+    background:var(--taupe);
+    color:var(--ivory);
+    padding:60px 6% 68px;
+  }
+
+  .gallery-inner{
+    max-width:1200px;
+    margin:0 auto;
+  }
+
+  .gallery-head{margin-bottom:24px;}
+
+  .gallery-eyebrow{
+    display:inline-block;
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--ivory);
+    margin-bottom:10px;
+  }
+
+  .gallery-heading{
+    font-size:clamp(28px, 3.4vw, 42px);
+    font-weight:800;
+    letter-spacing:-0.02em;
+    line-height:1.15;
+  }
+
+  .mosaic{
+    position:relative;
+    display:grid;
+    grid-template-columns:2fr 1fr 1fr;
+    grid-template-rows:1fr 1fr;
+    gap:8px;
+    height:clamp(300px, 48vh, 480px);
+    border-radius:16px;
+    overflow:hidden;
+  }
+
+  .mosaic-tile{
+    position:relative;
+    padding:0;
+    border:0;
+    background:#6a5e54;
+    overflow:hidden;
+    cursor:pointer;
+  }
+  .mosaic-tile:first-child{grid-row:1 / span 2;}
+
+  .mosaic-tile img{
+    display:block;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    transition:transform .6s ease;
+  }
+  .mosaic-tile::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,0);
+    transition:background .25s ease;
+  }
+  .mosaic-tile:hover::after{background:rgba(0,0,0,0.14);}
+  .mosaic-tile:hover img{transform:scale(1.03);}
+  .mosaic-tile:focus-visible{outline:3px solid var(--cream); outline-offset:-3px;}
+
+  .mosaic-all{
+    position:absolute;
+    right:16px;
+    bottom:16px;
+    z-index:2;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:9px 14px;
+    border-radius:8px;
+    border:1px solid var(--ink);
+    background:#fff;
+    color:var(--ink);
+    font:600 14px/1 'Plus Jakarta Sans', sans-serif;
+    cursor:pointer;
+    box-shadow:0 2px 8px rgba(0,0,0,0.12);
+    transition:transform .15s ease, background .2s ease;
+  }
+  .mosaic-all:hover{background:#f6f6f2; transform:scale(1.03);}
+  .mosaic-all:focus-visible{outline:3px solid var(--ink); outline-offset:2px;}
+  .mosaic-all svg{width:16px; height:16px;}
+
+  .tour{
+    position:fixed;
+    inset:0;
+    z-index:1000;
+    background:#fff;
+    color:var(--ink);
+    overflow-y:auto;
+  }
+  .tour[hidden]{display:none;}
+
+  .tour-bar{
+    position:sticky;
+    top:0;
+    z-index:2;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    height:64px;
+    padding:0 20px;
+    background:rgba(255,255,255,0.96);
+    border-bottom:1px solid rgba(28,26,22,0.1);
+  }
+
+  .tour-close{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    border:0;
+    background:transparent;
+    color:var(--ink);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition:background .2s ease;
+  }
+  .tour-close:hover{background:rgba(28,26,22,0.08);}
+  .tour-close:focus-visible{outline:3px solid var(--ink); outline-offset:1px;}
+  .tour-close svg{width:22px; height:22px;}
+
+  .tour-title{font-size:16px; font-weight:700;}
+
+  .tour-body{
+    max-width:1000px;
+    margin:0 auto;
+    padding:24px 20px 72px;
+    columns:2 320px;
+    column-gap:12px;
+  }
+
+  .tour-item{
+    margin:0 0 12px;
+    break-inside:avoid;
+    border-radius:12px;
+    overflow:hidden;
+    background:#e6e7e1;
+    scroll-margin-top:80px;
+  }
+  .tour-item:first-child{column-span:all;}
+  .tour-item img{display:block; width:100%; height:auto;}
+
+  @media (max-width: 620px){
+    .gallery{padding:44px 6% 52px;}
+    .gallery-head{margin-bottom:18px;}
+    .mosaic{
+      grid-template-columns:1fr;
+      grid-template-rows:1fr;
+      height:clamp(240px, 40vh, 340px);
+      border-radius:12px;
+    }
+    .mosaic-tile:first-child{grid-row:auto;}
+    .mosaic-tile:not(:first-child){display:none;}
+    .mosaic-all{right:10px; bottom:10px; padding:8px 12px; font-size:13px;}
+    .tour-body{columns:1; padding:16px 12px 56px;}
+  }
+
+  /* ---------- Location ---------- */
+  .location{
+    background:var(--ivory);
+    color:var(--ink);
+    padding:60px 6% 112px;
+  }
+
+  .location-inner{max-width:1200px; margin:0 auto;}
+
+  .location-head{margin-bottom:22px;}
+
+  .location-note{
+    margin-top:10px;
+    max-width:760px;
+    font-size:15px;
+    line-height:1.6;
+    color:rgba(28,26,22,0.68);
+  }
+  .location-note + .location-note{margin-top:12px;}
+  .location-note-more[hidden]{display:none;}
+
+  .location-note-toggle{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    margin-top:10px;
+    padding:0;
+    border:0;
+    background:transparent;
+    font:600 14px/1 'Plus Jakarta Sans', sans-serif;
+    color:var(--ink);
+    text-decoration:underline;
+    text-underline-offset:3px;
+    cursor:pointer;
+  }
+  .location-note-toggle:focus-visible{outline:2px solid var(--ink); outline-offset:2px;}
+  .location-note-toggle svg{width:14px; height:14px; transition:transform .2s ease;}
+  .location-note-toggle[aria-expanded="true"] svg{transform:rotate(180deg);}
+
+  .directions-bar{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:12px;
+    margin-top:22px;
+    padding:14px 18px;
+    background:#fff;
+    border:1px solid rgba(28,26,22,0.12);
+    border-radius:14px;
+    box-shadow:0 6px 18px rgba(23,24,26,0.06);
+  }
+
+  .directions-icon{width:22px; height:22px; flex-shrink:0; color:var(--ink);}
+
+  .directions-bar input{
+    flex:1 1 220px;
+    min-width:0;
+    border:0;
+    background:transparent;
+    font:500 15px/1.4 'Plus Jakarta Sans', sans-serif;
+    color:var(--ink);
+  }
+  .directions-bar input::placeholder{color:rgba(28,26,22,0.45);}
+  .directions-bar input:focus{outline:0;}
+
+  .directions-bar button{
+    flex-shrink:0;
+    padding:11px 18px;
+    border:0;
+    border-radius:9px;
+    background:var(--ink);
+    color:#fff;
+    font:600 14px/1 'Plus Jakarta Sans', sans-serif;
+    cursor:pointer;
+    transition:background .2s ease, transform .15s ease;
+  }
+  .directions-bar button:hover{background:#31302b;}
+  .directions-bar button:focus-visible{outline:2px solid var(--ink); outline-offset:2px;}
+  .directions-bar button:disabled{opacity:0.6; cursor:default;}
+
+  .directions-result{
+    flex:1 0 100%;
+    font-size:14px;
+    line-height:1.5;
+    color:rgba(28,26,22,0.75);
+    padding-top:2px;
+  }
+  .directions-result[hidden]{display:none;}
+  .directions-result.is-error{color:#b23b3b;}
+
+  @media (max-width: 620px){
+    .directions-bar{padding:12px 14px; border-radius:12px;}
+    .directions-bar button{width:100%;}
+  }
+
+  .location-body{margin-top:20px;}
+
+  /* ---- Expanding location card, below the map ---- */
+  .xmap-stage{
+    --xmap-gap:16px;
+    display:grid;
+    grid-template-columns:repeat(4, minmax(0, 1fr));
+    gap:var(--xmap-gap);
+    margin-top:20px;
+  }
+
+  .xmap{
+    display:block;
+    position:relative;
+    width:100%;
+    perspective:1400px;
+  }
+  .xmap[data-flipped="true"]{grid-column:span 2;}
+
+  .xmap-card{
+    position:relative;
+    width:100%;
+    aspect-ratio:3 / 2;
+    border-radius:16px;
+    box-shadow:0 8px 24px rgba(23,24,26,0.08);
+    transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));
+    transform-style:preserve-3d;
+    transition:transform .18s ease-out, box-shadow .3s ease;
+  }
+  .xmap:hover .xmap-card{box-shadow:0 14px 34px rgba(23,24,26,0.14);}
+
+  .xmap-flipper{
+    position:absolute;
+    inset:0;
+    transform-style:preserve-3d;
+    transition:transform .7s cubic-bezier(.4,.1,.2,1);
+  }
+  .xmap[data-flipped="true"] .xmap-flipper{transform:rotateY(180deg);}
+
+  .xmap-face{
+    position:absolute;
+    inset:0;
+    overflow:hidden;
+    border-radius:16px;
+    border:1px solid rgba(28,26,22,0.14);
+    background:#e7e5df;
+    backface-visibility:hidden;
+    -webkit-backface-visibility:hidden;
+  }
+
+  .xmap-front{
+    display:block;
+    width:100%;
+    padding:0;
+    font:inherit;
+    color:var(--ink);
+    text-align:left;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .xmap-front:focus-visible{outline:3px solid var(--ink); outline-offset:3px;}
+
+  .xmap-back{
+    transform:rotateY(180deg);
+    background:#fff;
+  }
+
+  .xmap-img{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    display:block;
+    object-fit:cover;
+  }
+
+  .xmap-shade{
+    position:absolute;
+    inset:0;
+    z-index:2;
+    pointer-events:none;
+    background:linear-gradient(to top, rgba(247,243,234,0.96) 0%, rgba(247,243,234,0.7) 22%, rgba(247,243,234,0) 52%);
+  }
+
+  .xmap-kicker{
+    position:absolute;
+    z-index:3;
+    top:10px;
+    right:10px;
+    max-width:calc(100% - 20px);
+    padding:4px 9px;
+    border-radius:999px;
+    background:rgba(255,255,255,0.9);
+    box-shadow:0 2px 8px rgba(23,24,26,0.12);
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    line-height:1.3;
+    color:var(--ink);
+  }
+
+  .xmap-text{
+    position:absolute;
+    z-index:3;
+    left:16px;
+    right:16px;
+    bottom:14px;
+    display:block;
+  }
+  .xmap-title{display:block; font-size:15px; font-weight:800; letter-spacing:-0.01em; transition:transform .25s ease;}
+  .xmap-front:hover .xmap-title{transform:translateX(4px);}
+  .xmap-line{
+    display:block;
+    height:1px;
+    margin-top:6px;
+    background:linear-gradient(to right, rgba(79,122,82,0.7), rgba(79,122,82,0.3), transparent);
+    transform:scaleX(0.3);
+    transform-origin:left;
+    transition:transform .4s ease-out;
+  }
+  .xmap-front:hover .xmap-line{transform:scaleX(1);}
+
+  /* ---- back of the card: photo gallery + walk stats ---- */
+  .xmap-gallery{
+    position:absolute;
+    left:0; right:0; top:0;
+    bottom:var(--xmap-stats-h, 52px);
+    display:flex;
+    overflow-x:auto;
+    overflow-y:hidden;
+    scroll-snap-type:x mandatory;
+    scrollbar-width:none;
+    background:#e7e5df;
+  }
+  .xmap-gallery::-webkit-scrollbar{display:none;}
+  .xmap-gallery:focus-visible{outline:3px solid var(--ink); outline-offset:-3px;}
+  .xmap-photo{
+    flex:0 0 100%;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    scroll-snap-align:start;
+    scroll-snap-stop:always;
+  }
+
+  .xmap-nav,
+  .xmap-close{
+    position:absolute;
+    z-index:3;
+    width:32px;
+    height:32px;
+    padding:0;
+    border:0;
+    border-radius:50%;
+    background:rgba(255,255,255,0.92);
+    color:var(--ink);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    box-shadow:0 2px 8px rgba(23,24,26,0.22);
+    transition:background .2s ease, transform .15s ease;
+  }
+  .xmap-nav:hover,
+  .xmap-close:hover{background:#fff; transform:scale(1.06);}
+  .xmap-nav:focus-visible,
+  .xmap-close:focus-visible{outline:3px solid var(--ink); outline-offset:2px;}
+  .xmap-nav svg,
+  .xmap-close svg{width:16px; height:16px;}
+  .xmap-nav{top:calc((100% - var(--xmap-stats-h, 52px)) / 2 - 16px);}
+  .xmap-prev{left:10px;}
+  .xmap-next{right:10px;}
+  .xmap-close{top:10px; right:10px;}
+
+  .xmap-count{
+    position:absolute;
+    z-index:3;
+    left:10px;
+    bottom:calc(var(--xmap-stats-h, 52px) + 10px);
+    padding:3px 9px;
+    border-radius:999px;
+    background:rgba(28,26,22,0.72);
+    color:#fff;
+    font-size:11px;
+    font-weight:600;
+    font-variant-numeric:tabular-nums;
+    letter-spacing:0.04em;
+  }
+
+  .xmap-stats{
+    position:absolute;
+    left:0; right:0; bottom:0;
+    height:var(--xmap-stats-h, 52px);
+    display:flex;
+    align-items:center;
+    background:#fff;
+    border-top:1px solid rgba(28,26,22,0.1);
+    font-size:13px;
+    color:rgba(28,26,22,0.7);
+  }
+  .xmap-stat{
+    flex:1 1 auto;
+    padding:0 8px;
+    text-align:center;
+    white-space:nowrap;
+  }
+  .xmap-stat + .xmap-stat{border-left:1px solid rgba(28,26,22,0.1);}
+  .xmap-stat strong{font-size:14px; font-weight:800; color:var(--ink);}
+
+  @media (max-width: 900px){
+    .xmap-stage{grid-template-columns:repeat(2, minmax(0, 1fr));}
+  }
+  @media (max-width: 520px){
+    .xmap-stage{grid-template-columns:minmax(0, 1fr);}
+    .xmap[data-flipped="true"]{grid-column:auto;}
+    .xmap-stats{font-size:12px;}
+    .xmap-stat{padding:0 4px;}
+    .xmap-stat strong{font-size:13px;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .xmap-card, .xmap-flipper{transition:none;}
+    .xmap-gallery{scroll-behavior:auto;}
+  }
+
+  .location-map-wrap{
+    position:relative;
+    width:100%;
+    --map-h:clamp(340px, 46vh, 440px);
+    height:var(--map-h);
+    border-radius:16px;
+    overflow:hidden;
+    border:1px solid rgba(28,26,22,0.12);
+    background:#e7e5df;
+  }
+
+  /* ---- Floating search + categories panel, inside the map frame ---- */
+  .map-panel{
+    position:absolute;
+    top:16px;
+    left:16px;
+    z-index:650;
+    width:280px;
+    max-width:calc(100% - 32px);
+  }
+
+  .map-search{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:#fff;
+    border-radius:999px;
+    padding:12px 16px;
+    box-shadow:0 6px 18px rgba(28,26,22,0.18);
+  }
+  .map-search svg{width:17px; height:17px; color:rgba(28,26,22,0.5); flex-shrink:0;}
+  .map-search input{
+    flex:1;
+    min-width:0;
+    border:none;
+    outline:none;
+    background:transparent;
+    font:14.5px/1.4 'Plus Jakarta Sans', sans-serif;
+    color:var(--ink);
+  }
+
+  .map-panel-drop{
+    margin-top:8px;
+    background:#fff;
+    border-radius:14px;
+    box-shadow:0 10px 26px rgba(28,26,22,0.2);
+    overflow:hidden;
+  }
+  .map-panel-drop[hidden]{display:none;}
+
+  .map-categories{padding:6px;}
+
+  .map-cat-btn{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    width:100%;
+    padding:10px 8px;
+    border:none;
+    background:transparent;
+    border-radius:10px;
+    cursor:pointer;
+    text-align:left;
+    font-family:inherit;
+    color:inherit;
+    transition:background .15s ease;
+  }
+  .map-cat-btn:hover{background:rgba(28,26,22,0.05);}
+  .map-cat-btn:focus-visible{outline:2px solid var(--ink); outline-offset:-2px;}
+
+  .map-cat-icon{
+    flex-shrink:0;
+    width:36px; height:36px;
+    border-radius:50%;
+    background:var(--ivory);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--ink);
+  }
+  .map-cat-icon svg{width:17px; height:17px;}
+
+  .map-cat-text{display:flex; flex-direction:column; gap:1px; min-width:0;}
+  .map-cat-title{font-size:14px; font-weight:700;}
+  .map-cat-sub{font-size:11.5px; color:rgba(28,26,22,0.55);}
+
+  .map-cat-chev{width:15px; height:15px; margin-left:auto; flex-shrink:0; color:rgba(28,26,22,0.35);}
+
+  .map-list-view{display:flex; flex-direction:column; max-height:calc(var(--map-h) - 92px);}
+  .map-list-view[hidden]{display:none;}
+
+  .map-list-back{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-shrink:0;
+    padding:12px 14px;
+    border:none;
+    border-bottom:1px solid rgba(28,26,22,0.1);
+    background:transparent;
+    font:600 13px 'Plus Jakarta Sans', sans-serif;
+    color:var(--ink);
+    cursor:pointer;
+  }
+  .map-list-back:hover{background:rgba(28,26,22,0.04);}
+  .map-list-back svg{width:15px; height:15px;}
+
+  .location-list{
+    overflow-y:auto;
+    padding:6px;
+  }
+
+  .location-list-status{
+    padding:16px 10px;
+    font-size:13.5px;
+    color:rgba(28,26,22,0.55);
+    text-align:center;
+  }
+
+  .place-card{
+    display:block;
+    width:100%;
+    text-align:left;
+    background:transparent;
+    border:1px solid transparent;
+    border-radius:10px;
+    padding:10px 10px;
+    margin-bottom:2px;
+    cursor:pointer;
+    font-family:inherit;
+    color:inherit;
+    transition:background .15s ease, border-color .15s ease;
+  }
+  .place-card:hover{background:rgba(28,26,22,0.04);}
+  .place-card:focus-visible{outline:2px solid var(--ink); outline-offset:1px;}
+  .place-card.is-active{background:var(--ivory); border-color:rgba(28,26,22,0.16);}
+
+  .place-card-top{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:8px;
+    margin-bottom:4px;
+  }
+
+  .place-name{font-size:13.5px; font-weight:700; line-height:1.3;}
+
+  .place-distance{
+    flex-shrink:0;
+    font-size:11.5px;
+    font-weight:600;
+    color:rgba(28,26,22,0.55);
+    white-space:nowrap;
+  }
+
+  .place-meta{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:12px;
+    color:rgba(28,26,22,0.65);
+  }
+
+  .place-dot{width:7px; height:7px; border-radius:50%; flex-shrink:0;}
+  .place-rating{display:inline-flex; align-items:center; gap:3px; font-weight:600; color:var(--ink);}
+  .place-rating svg{width:12px; height:12px; fill:#e0a300; stroke:none;}
+
+  .place-type{
+    text-transform:uppercase;
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:0.04em;
+    color:rgba(28,26,22,0.45);
+  }
+
+  .location-map{width:100%; height:100%; background:#e7e5df;}
+  .location-map .leaflet-marker-icon.brocks-den-pin{filter:drop-shadow(0 3px 4px rgba(0,0,0,0.35));}
+  .location-map .place-pin{
+    width:14px; height:14px; border-radius:50%;
+    background:#7a6e63; border:2px solid #fff;
+    box-shadow:0 2px 5px rgba(0,0,0,0.3);
+  }
+  .location-map .place-pin.is-active{outline:2px solid #1c1a16; outline-offset:1px;}
+
+  .map-cat-icon{background:var(--ivory); color:var(--ink);}
+  .map-cat-btn[data-cat="restaurants"] .map-cat-icon{background:#c1502f; color:#fff;}
+  .map-cat-btn[data-cat="groceries"] .map-cat-icon{background:#4f7a52; color:#fff;}
+  .map-cat-btn[data-cat="attractions"] .map-cat-icon{background:#3d6b8a; color:#fff;}
+  .leaflet-popup-content{font-family:'Plus Jakarta Sans', sans-serif;}
+  .leaflet-popup-content b{display:block; margin-bottom:2px;}
+
+  .location-fallback{
+    position:absolute;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    padding:24px;
+    text-align:center;
+    color:rgba(28,26,22,0.6);
+    background:#e7e5df;
+  }
+  .location-fallback[hidden]{display:none;}
+  .location-fallback svg{width:32px; height:32px; opacity:0.5;}
+  .location-fallback p{max-width:280px; font-size:14px; line-height:1.5;}
+
+  @media (max-width: 620px){
+    .location{padding:44px 6% 80px;}
+    .location-map-wrap{--map-h:min(70vh, 520px);}
+    .map-panel{top:10px; left:10px; width:calc(100% - 20px);}
+    .map-list-view{max-height:calc(var(--map-h) - 80px);}
+  }
+
+  /* ---------- Reviews ---------- */
+  .reviews{
+    background:var(--ivory);
+    color:var(--ink);
+    padding:96px 6% 104px;
+    overflow:hidden;
+  }
+  .reviews-inner{max-width:1200px; margin:0 auto;}
+
+  .reviews-head{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    max-width:560px;
+    margin:0 auto;
+    text-align:center;
+  }
+  .reviews .gallery-eyebrow{color:rgba(28,26,22,0.6);}
+  .reviews-note{
+    margin-top:14px;
+    font-size:15px;
+    line-height:1.6;
+    color:rgba(28,26,22,0.68);
+  }
+
+  .reviews-cols{
+    display:flex;
+    justify-content:center;
+    gap:24px;
+    margin-top:44px;
+    max-height:660px;
+    overflow:hidden;
+    -webkit-mask-image:linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+    mask-image:linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+  }
+  .reviews-col{flex:0 1 340px; min-width:0;}
+  .reviews-col:nth-child(2){display:none;}
+  .reviews-col:nth-child(3){display:none;}
+  @media (min-width: 760px){ .reviews-col:nth-child(2){display:block;} }
+  @media (min-width: 1060px){ .reviews-col:nth-child(3){display:block;} }
+
+  .reviews-track{
+    display:flex;
+    flex-direction:column;
+    gap:24px;
+    padding-bottom:24px;
+    animation:reviews-scroll var(--dur, 18s) linear infinite;
+    will-change:transform;
+  }
+  .reviews-cols:hover .reviews-track{animation-play-state:paused;}
+  @keyframes reviews-scroll{
+    from{transform:translateY(0);}
+    to{transform:translateY(-50%);}
+  }
+
+  .review-card{
+    padding:28px;
+    border-radius:24px;
+    background:var(--taupe);
+    color:var(--ivory);
+    box-shadow:0 10px 28px rgba(23,24,26,0.16);
+  }
+  .review-text{font-size:15px; line-height:1.65; white-space:pre-line;}
+  .review-who{display:flex; align-items:center; gap:12px; margin-top:20px;}
+  .review-avatar{
+    flex-shrink:0;
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    background:var(--ivory);
+    color:var(--taupe);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:15px;
+    font-weight:700;
+  }
+  .review-name{display:block; font-size:15px; font-weight:700; letter-spacing:-0.01em; line-height:1.3;}
+  .review-role{display:block; font-size:13px; line-height:1.3; opacity:0.75;}
+
+  @media (max-width: 620px){
+    .reviews{padding:68px 6% 76px;}
+    .reviews-cols{max-height:560px; margin-top:32px;}
+    .review-card{padding:22px; border-radius:20px;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .reviews-track{animation:none;}
+    .reviews-track [aria-hidden="true"]{display:none;}
+    .reviews-cols{
+      max-height:none;
+      overflow:visible;
+      -webkit-mask-image:none;
+      mask-image:none;
+      flex-wrap:wrap;
+    }
+    .reviews-col{flex:1 1 300px;}
+    .reviews-col:nth-child(2), .reviews-col:nth-child(3){display:block;}
+  }
+
+  /* ---------- Footer ---------- */
+  .site-footer{
+    background:var(--taupe);
+    color:var(--ivory);
+    padding:72px 6% 28px;
+  }
+  .footer-inner{max-width:1200px; margin:0 auto;}
+
+  .footer-top{
+    display:grid;
+    grid-template-columns:1.4fr 1fr 1fr;
+    gap:40px 56px;
+    padding-bottom:48px;
+    border-bottom:1px solid rgba(240,240,234,0.22);
+  }
+
+  .site-footer .brand{color:var(--ivory);}
+  .footer-tagline{
+    margin-top:16px;
+    max-width:340px;
+    font-size:15px;
+    line-height:1.65;
+    color:rgba(240,240,234,0.78);
+  }
+
+  .footer-heading{
+    margin-bottom:16px;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:rgba(240,240,234,0.62);
+  }
+
+  .footer-links{list-style:none; display:flex; flex-direction:column; gap:11px;}
+  .footer-links a,
+  .footer-top-link{
+    color:var(--ivory);
+    font-size:15px;
+    text-decoration:none;
+    background-image:linear-gradient(currentColor, currentColor);
+    background-repeat:no-repeat;
+    background-position:0 100%;
+    background-size:0 1px;
+    transition:background-size .25s ease;
+  }
+  .footer-links a:hover,
+  .footer-top-link:hover{background-size:100% 1px;}
+  .footer-links a:focus-visible,
+  .footer-top-link:focus-visible{outline:2px solid var(--ivory); outline-offset:3px; border-radius:2px;}
+
+  .footer-address{
+    font-style:normal;
+    font-size:15px;
+    line-height:1.75;
+    color:rgba(240,240,234,0.86);
+  }
+
+  .footer-bottom{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px 24px;
+    padding-top:24px;
+    font-size:13px;
+    color:rgba(240,240,234,0.7);
+  }
+  .footer-top-link{font-size:13px;}
+
+  @media (max-width: 860px){
+    .footer-top{grid-template-columns:1fr 1fr;}
+    .footer-brand{grid-column:1 / -1;}
+  }
+  @media (max-width: 520px){
+    .site-footer{padding:56px 6% 24px;}
+    .footer-top{grid-template-columns:1fr; gap:32px;}
+    .footer-bottom{flex-direction:column; align-items:flex-start;}
+  }
+
+  /* ---------- Prompt to choose dates: red ring + shake ---------- */
+  .field.needs-date{
+    box-shadow:0 0 0 2px #ff4d57;
+    background:rgba(255,77,87,0.18);
+  }
+  .field.is-shaking{animation:bk-shake .5s cubic-bezier(.36,.07,.19,.97) both;}
+  @keyframes bk-shake{
+    0%, 100%{transform:translateX(0);}
+    15%{transform:translateX(-9px);}
+    30%{transform:translateX(8px);}
+    45%{transform:translateX(-6px);}
+    60%{transform:translateX(5px);}
+    75%{transform:translateX(-3px);}
+    90%{transform:translateX(2px);}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .field.is-shaking{animation:none;}
+  }
+  .bk-sr{
+    position:absolute;
+    width:1px;
+    height:1px;
+    margin:-1px;
+    padding:0;
+    overflow:hidden;
+    clip:rect(0 0 0 0);
+    white-space:nowrap;
+    border:0;
+  }
+
+  /* ---------- Airbnb-style date and guest pop-ups ---------- */
+  .bk-pop{
+    position:fixed;
+    z-index:300;
+    background:#fff;
+    color:#222;
+    border-radius:32px;
+    box-shadow:0 8px 32px rgba(0,0,0,0.22), 0 0 0 1px rgba(0,0,0,0.04);
+    font-family:'Plus Jakarta Sans', sans-serif;
+    max-width:calc(100vw - 24px);
+    visibility:hidden;
+    opacity:0;
+    transform:translateY(-6px);
+    transition:opacity .16s ease, transform .16s ease, visibility 0s linear .16s;
+  }
+  .bk-pop.is-open{
+    visibility:visible;
+    opacity:1;
+    transform:none;
+    transition:opacity .16s ease, transform .16s ease;
+  }
+  .bk-pop:focus{outline:none;}
+
+  /* calendar */
+  .bk-date{padding:30px 32px 20px; width:max-content;}
+  .bk-months{display:flex; gap:48px;}
+  .bk-month{width:308px;}
+  .bk-month-title{
+    height:32px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:14px;
+    font-size:16px;
+    font-weight:600;
+  }
+  .bk-nav{
+    position:absolute;
+    top:30px;
+    width:32px;
+    height:32px;
+    padding:0;
+    border:0;
+    border-radius:50%;
+    background:transparent;
+    color:#222;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition:background .15s ease;
+  }
+  .bk-nav:hover{background:#f2f2f2;}
+  .bk-nav:focus-visible{outline:2px solid #222; outline-offset:1px;}
+  .bk-nav:disabled{opacity:0.25; cursor:default; background:transparent;}
+  .bk-nav svg{width:16px; height:16px;}
+  .bk-prev{left:30px;}
+  .bk-next{right:30px;}
+
+  .bk-grid{display:grid; grid-template-columns:repeat(7, 44px);}
+  .bk-dow{
+    height:34px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:12px;
+    font-weight:500;
+    color:#6a6a6a;
+  }
+  .bk-cell{width:44px; height:44px;}
+  .bk-cell.in-range{background:#f2f2f2;}
+  .bk-cell.is-start.has-range{background:linear-gradient(to right, transparent 50%, #f2f2f2 50%);}
+  .bk-cell.is-end{background:linear-gradient(to left, transparent 50%, #f2f2f2 50%);}
+  .bk-cell.is-start.is-end{background:transparent;}
+
+  .bk-day{
+    width:44px;
+    height:44px;
+    padding:0;
+    border:0;
+    border-radius:50%;
+    background:transparent;
+    color:#222;
+    font:500 14px/1 'Plus Jakarta Sans', sans-serif;
+    cursor:pointer;
+    position:relative;
+  }
+  .bk-day:hover:not(:disabled):not(.is-selected){box-shadow:inset 0 0 0 1px #222;}
+  .bk-day:focus-visible{outline:2px solid #222; outline-offset:-2px;}
+  .bk-day:disabled{color:#b0b0b0; cursor:default;}
+  .bk-day.is-unavailable{color:#b0b0b0; text-decoration:line-through;}
+  .bk-day.is-unavailable:not(:disabled){cursor:pointer;}
+  .bk-day.is-selected{background:#222; color:#fff; font-weight:700; text-decoration:none;}
+  .bk-day.is-selected:hover{box-shadow:none;}
+
+  .bk-foot{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    margin-top:10px;
+    padding-top:14px;
+    font-size:14px;
+  }
+  .bk-status{color:#6a6a6a;}
+  .bk-clear{
+    padding:6px 4px;
+    border:0;
+    background:transparent;
+    color:#222;
+    font:600 14px/1 'Plus Jakarta Sans', sans-serif;
+    text-decoration:underline;
+    cursor:pointer;
+  }
+  .bk-clear:disabled{opacity:0.35; cursor:default; text-decoration:none;}
+  .bk-clear:focus-visible{outline:2px solid #222; outline-offset:2px; border-radius:4px;}
+
+  /* guests */
+  .bk-guest{padding:12px 32px 22px; width:400px;}
+  .bk-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    padding:22px 0;
+    border-bottom:1px solid #ddd;
+  }
+  .bk-row-title{font-size:16px; font-weight:600;}
+  .bk-row-sub{margin-top:2px; font-size:14px; color:#6a6a6a;}
+  .bk-step{display:flex; align-items:center; gap:14px;}
+  .bk-step button{
+    width:32px;
+    height:32px;
+    padding:0;
+    border:1px solid #b0b0b0;
+    border-radius:50%;
+    background:#fff;
+    color:#222;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition:border-color .15s ease;
+  }
+  .bk-step button:hover:not(:disabled){border-color:#222;}
+  .bk-step button:focus-visible{outline:2px solid #222; outline-offset:2px;}
+  .bk-step button:disabled{opacity:0.3; cursor:not-allowed;}
+  .bk-step svg{width:14px; height:14px;}
+  .bk-count{min-width:22px; text-align:center; font-size:16px; font-weight:500; font-variant-numeric:tabular-nums;}
+  .bk-note{margin-top:18px; font-size:13px; line-height:1.5; color:#6a6a6a;}
+
+  @media (max-width: 760px){
+    .bk-month:nth-child(2){display:none;}
+    .bk-date{padding:28px 20px 16px;}
+    .bk-prev{left:18px;}
+    .bk-next{right:18px;}
+    .bk-nav{top:28px;}
+    .bk-months{justify-content:center;}
+  }
+  @media (max-width: 420px){
+    .bk-date{padding:28px 10px 16px;}
+    .bk-prev{left:8px;}
+    .bk-next{right:8px;}
+    .bk-guest{padding:8px 20px 18px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .bk-pop, .bk-pop.is-open{transition:none;}
+  }
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-frame">
+    <img class="hero-bg" src="assets/images/hero-2.avif" width="1440" height="1080" alt="Brocks Den yurt on a Welsh hilltop with the wood-fired hot tub and misty valley views">
+    <div class="hero-tint"></div>
+    <div class="hero-overlay"></div>
+
+    <header class="nav">
+      <div class="brand">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L3 20H21L12 2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+          <path d="M12 2V20" stroke="currentColor" stroke-width="1.6"/>
+          <path d="M7.5 12H16.5" stroke="currentColor" stroke-width="1.6"/>
+        </svg>
+        Brocks Den
+      </div>
+
+      <nav class="nav-links">
+        <a href="#" class="active">Home</a>
+        <a href="#amenities">Amenities</a>
+        <a href="#reviews">Reviews</a>
+        <a href="#location">Location</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+
+      <div class="nav-right">
+        <a href="contact.html" class="btn-ghost">Contact us</a>
+        <a href="checkout.html" class="btn-solid" id="bookNowBtn">Book now</a>
+      </div>
+    </header>
+
+    <div class="hero-body">
+      <div class="content">
+        <div class="eyebrow">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          Church Stoke, Welsh Marches
+        </div>
+        <h1 class="headline">Trade the noise for hilltop views at Brocks Den yurt</h1>
+      </div>
+
+      <div class="booking-bar" id="bookingBar">
+        <button type="button" class="field" id="fieldCheckin" aria-haspopup="dialog" aria-expanded="false" aria-controls="datePop">
+          <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <span class="lbl">
+            <span>Check-in</span>
+            <span class="val is-empty" id="valCheckin">Add date</span>
+          </span>
+        </button>
+        <div class="divider"></div>
+        <button type="button" class="field" id="fieldCheckout" aria-haspopup="dialog" aria-expanded="false" aria-controls="datePop">
+          <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <span class="lbl">
+            <span>Check-out</span>
+            <span class="val is-empty" id="valCheckout">Add date</span>
+          </span>
+        </button>
+        <div class="divider"></div>
+        <button type="button" class="field" id="fieldGuests" aria-haspopup="dialog" aria-expanded="false" aria-controls="guestPop">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M4 20c0-3.3 3.6-5 8-5s8 1.7 8 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="8" r="3.5" stroke="currentColor" stroke-width="1.6"/></svg>
+          <span class="lbl">
+            <span>Guests</span>
+            <span class="val" id="valGuests">2 guests</span>
+          </span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" width="12" height="12"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+
+      <div class="cta-row">
+        <button class="btn-primary" id="reserveBtn" type="button">Reserve now</button>
+        <button class="btn-outline" id="seeGallery">See the gallery</button>
+      </div>
+    </div>
+
+    <div class="tag-cluster">
+      <div class="pill-tag">Hot tub</div>
+      <div class="pill-tag rotate">Off-grid</div>
+      <div class="pill-tag">Sleeps 2</div>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="amenities">
+  <h2 class="features-title">Explore the features</h2>
+  <div class="features-orbit">
+    <div class="orbit-live">
+      <div class="orbital-stage" id="orbitalStage">
+        <div class="orbital-photo">
+          <img src="assets/images/orbit-yurty.png" alt="Brocks Den yurt glowing at night">
+        </div>
+        <div class="orbital-nodes" id="orbitalNodes"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="gallery" id="gallery">
+  <div class="gallery-inner">
+    <div class="gallery-head">
+      <span class="gallery-eyebrow">Gallery</span>
+      <h2 class="gallery-heading">A look around Brocks Den</h2>
+    </div>
+
+    <div class="mosaic">
+      <button class="mosaic-tile" type="button" data-index="0" aria-label="Open photo 1: Brocks Den lit up at dusk with the fire pit glowing">
+        <img src="assets/images/fire-pit-card.avif" width="1440" height="959" alt="Brocks Den lit up at dusk with the fire pit glowing" decoding="async">
+      </button>
+      <button class="mosaic-tile" type="button" data-index="1" aria-label="Open photo 2: Inside the yurt: wood burner, king size bed and armchairs beneath the skylight">
+        <img src="assets/images/gallery/g01.avif" width="1440" height="959" alt="Inside the yurt: wood burner, king size bed and armchairs beneath the skylight" decoding="async">
+      </button>
+      <button class="mosaic-tile" type="button" data-index="2" aria-label="Open photo 3: The yurt on the hilltop looking out across the valley">
+        <img src="assets/images/gallery/g05.avif" width="1440" height="1080" alt="The yurt on the hilltop looking out across the valley" decoding="async">
+      </button>
+      <button class="mosaic-tile" type="button" data-index="3" aria-label="Open photo 4: Wood burner with a glass of wine and a cheese board">
+        <img src="assets/images/gallery/g02.avif" width="1440" height="959" alt="Wood burner with a glass of wine and a cheese board" decoding="async">
+      </button>
+      <button class="mosaic-tile" type="button" data-index="4" aria-label="Open photo 5: The yurt above the morning mist">
+        <img src="assets/images/valley-views-card.avif" width="1440" height="1080" alt="The yurt above the morning mist" decoding="async">
+      </button>
+      <button class="mosaic-all" id="showAll" type="button">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="5" r="1.7"/><circle cx="12" cy="5" r="1.7"/><circle cx="19" cy="5" r="1.7"/><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/><circle cx="5" cy="19" r="1.7"/><circle cx="12" cy="19" r="1.7"/><circle cx="19" cy="19" r="1.7"/></svg>
+        Show all photos
+      </button>
+    </div>
+  </div>
+</section>
+
+<div class="tour" id="tour" role="dialog" aria-modal="true" aria-label="All photos" hidden>
+  <div class="tour-bar">
+    <button class="tour-close" id="tourClose" type="button" aria-label="Close all photos">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <p class="tour-title">31 photos</p>
+  </div>
+  <div class="tour-body" id="tourBody">
+      <figure class="tour-item" data-index="0">
+        <img src="assets/images/fire-pit-card.avif" width="1440" height="959" alt="Brocks Den lit up at dusk with the fire pit glowing" decoding="async">
+      </figure>
+      <figure class="tour-item" data-index="1">
+        <img src="assets/images/gallery/g01.avif" width="1440" height="959" alt="Inside the yurt: wood burner, king size bed and armchairs beneath the skylight" decoding="async">
+      </figure>
+      <figure class="tour-item" data-index="2">
+        <img src="assets/images/gallery/g05.avif" width="1440" height="1080" alt="The yurt on the hilltop looking out across the valley" decoding="async">
+      </figure>
+      <figure class="tour-item" data-index="3">
+        <img src="assets/images/gallery/g02.avif" width="1440" height="959" alt="Wood burner with a glass of wine and a cheese board" loading="lazy" decoding="async">
+      </figure>
+      <figure class="tour-item" data-index="4">
+        <img src="assets/images/valley-views-card.avif" width="1440" height="1080" alt="The yurt above the morning mist" loading="lazy" decoding="async">
+      </figure>
+      <figure class="tour-item" data-index="5">
+        <img src="assets/images/gallery/g12.avif" width="1440" height="1080" alt="Dining table and chairs inside the yurt" loading="lazy" decoding="async">
+      </figure>
+      <figure class="tour-item" data-index="6">
+        <img src="assets/images/gallery/g20.avif" width="1440" height="1920" alt="The wood-fired hot tub with views over the hills" loading="lazy" decoding="async">
+      </figure>
+      <figure class="tour-item" data-index="7">
+        <img src="assets/images/gallery/g06.avif" width="1440" height="958" alt="Inside the yurt, centred on the wood burner" loading="lazy" decoding="async">
+      </figure>
+      <figure class="tour-item" data-index="8">
+        <img src="assets/images/gallery/g10.avif" width="1440" height="1496" alt="Table and chairs looking out over the countryside" loading="lazy" decoding="async">
+      </figure>
+      <figure class="tour-item" data-index="9">
+        <img src="assets/images/gallery/g03.avif" width="1440" height="959" alt="Comfy seating area with a painted cabinet" loading="lazy" decoding="async">
+      </figure>
+      <figure class="tour-item" data-index="10">
+        <img src="assets/images/gallery/g25.avif" width="1440" height="1800" alt="The yurt on the grass with woodland behind" loading="lazy" decoding="async">
+      </figure>
+      <figure class="tour-item" data-index="11">
+        <img src="assets/images/gallery/g14.avif" width="1440" height="1920" alt="Fresh flowers and glassware on the table" loading="lazy" decoding="async">
+      </figure>
+      <figure class="tour-item" data-index="12">
+        <img src="assets/images/gallery/g08.avif" width="1440" height="1080" alt="The yurt and fire pit on the hillside under a blue sky" loading="lazy" decoding="async">
+      </figure>
+      <figure class="tour-item" data-index="13">
+        <img src="assets/images/bed-card.avif" width="1440" height="1080" alt="King size bed with the wood burner in front" loading="lazy" decoding="async">
+      </figure>
+      <figure class="tour-item" data-index="14">
+        <img src="assets/images/gallery/g09.avif" width="1440" height="1499" alt="Looking across the valley from the deck" loading="lazy" decoding="async">
+      </figure>
+      <figure class="tour-item" data-index="15">
+        <img src="assets/images/kitchen-card.avif" width="1440" height="1080" alt="The kitchen corner with cooker and cupboards" loading="lazy" decoding="async">
+      </figure>
+      <figure class="tour-item" data-index="16">
+        <img src="assets/images/gallery/g22.avif" width="1440" height="1920" alt="Hot tub with steps and wood-fired stove" loading="lazy" decoding="async">
+      </figure>
+      <figure class="tour-item" data-index="17">
+        <img src="assets/images/gallery/g13.avif" width="1440" height="1080" alt="The wood burner glowing in front of the bed" loading="lazy" decoding="async">
+      </figure>
+      <figure class="tour-item" data-index="18">
+        <img src="assets/images/gallery/g23.avif" width="1440" height="810" alt="The yurt on its own on the lawn" loading="lazy" decoding="async">
+      </figure>
+      <figure class="tour-item" data-index="19">
+        <img src="assets/images/gallery/g15.avif" width="1440" height="1920" alt="Pink flowers and a Never stop exploring sign" loading="lazy" decoding="async">
+      </figure>
+      <figure class="tour-item" data-index="20">
+        <img src="assets/images/hot-tub-card.png" width="366" height="247" alt="Wine glasses on the edge of the hot tub" loading="lazy" decoding="async">
+      </figure>
+      <figure class="tour-item" data-index="21">
+        <img src="assets/images/gallery/g04.avif" width="1440" height="1080" alt="Lawn and views beyond the yurt" loading="lazy" decoding="async">
+      </figure>
+      <figure class="tour-item" data-index="22">
+        <img src="assets/images/gallery/g24.avif" width="1440" height="810" alt="Aerial view of the fields and woodland around Brocks Den" loading="lazy" decoding="async">
+      </figure>
+      <figure class="tour-item" data-index="23">
+        <img src="assets/images/gallery/g16.avif" width="1440" height="1920" alt="Looking out through the doors from the bed" loading="lazy" decoding="async">
+      </figure>
+      <figure class="tour-item" data-index="24">
+        <img src="assets/images/gallery/g11.avif" width="1440" height="894" alt="The yurt's timber front among the trees, with fire pit and seating" loading="lazy" decoding="async">
+      </figure>
+      <figure class="tour-item" data-index="25">
+        <img src="assets/images/gallery/g18.avif" width="1440" height="1920" alt="Gas cooker and oven in the kitchen" loading="lazy" decoding="async">
+      </figure>
+      <figure class="tour-item" data-index="26">
+        <img src="assets/images/gallery/g07.avif" width="1440" height="1080" alt="Outdoor table and chairs beside the yurt" loading="lazy" decoding="async">
+      </figure>
+      <figure class="tour-item" data-index="27">
+        <img src="assets/images/gallery/g19.avif" width="1440" height="1920" alt="Painted roof detail and skylight" loading="lazy" decoding="async">
+      </figure>
+      <figure class="tour-item" data-index="28">
+        <img src="assets/images/gallery/g21.avif" width="1440" height="1727" alt="The wooden shower and toilet hut" loading="lazy" decoding="async">
+      </figure>
+      <figure class="tour-item" data-index="29">
+        <img src="assets/images/gallery/g26.avif" width="1440" height="1920" alt="Wildflower meadow with buttercups" loading="lazy" decoding="async">
+      </figure>
+      <figure class="tour-item" data-index="30">
+        <img src="assets/images/gallery/g17.avif" width="1440" height="1920" alt="Side table with a plant against the lattice wall" loading="lazy" decoding="async">
+      </figure>
+  </div>
+</div>
+
+<section class="location" id="location">
+  <div class="location-inner">
+    <div class="location-head">
+      <span class="gallery-eyebrow">Location</span>
+      <h2 class="gallery-heading">Find your way to Brocks Den</h2>
+      <p class="location-note">Brocks Den is set in fabulous countryside within the Welsh Marches. An ideal location for walkers, being 2.5 miles from the Kerry Ridgeway / Offa&rsquo;s Dyke and only a 1-hour drive to Snowdonia / Eryri National Park.</p>
+      <p class="location-note location-note-more" id="locationNoteMore" hidden>Or for relaxing and enjoying the nature around, we are 4.5 miles from the beautiful historic town of Montgomery, with its 14th Century Castle, pubs, market and shops including the famous and unique Bunners. And 8 miles from the cosmopolitan town of Bishops Castle with its plethora of great pubs and restaurants.</p>
+      <button type="button" class="location-note-toggle" id="locationNoteToggle" aria-expanded="false" aria-controls="locationNoteMore">
+        Read more
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+
+    <div class="directions-bar">
+      <svg class="directions-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11l1.5-4.5A2 2 0 018.4 5h7.2a2 2 0 011.9 1.5L19 11"/><path d="M3 11h18v5a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1H6v1a1 1 0 01-1 1H4a1 1 0 01-1-1v-5z"/><circle cx="7" cy="14" r="1"/><circle cx="17" cy="14" r="1"/></svg>
+      <input type="text" id="locationOrigin" placeholder="Driving from&hellip; (town or postcode)" autocomplete="off">
+      <button type="button" id="locationGo">Get directions</button>
+      <p class="directions-result" id="locationResult" hidden></p>
+    </div>
+
+    <div class="location-body">
+      <div class="location-map-wrap">
+        <div class="location-map" id="locationMap"></div>
+
+        <div class="map-panel" id="mapPanel">
+          <div class="map-search" id="mapSearch">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <input type="text" id="mapSearchInput" placeholder="Search nearby" autocomplete="off">
+          </div>
+
+          <div class="map-panel-drop" id="mapPanelDrop" hidden>
+            <div class="map-categories" id="mapCategories">
+              <button type="button" class="map-cat-btn" data-cat="restaurants">
+                <span class="map-cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v6a2 2 0 002 2v10M7 3v6M11 3v6M15 3c-1.2 1.4-1.8 3-1.8 5s.6 3.6 1.8 5v8"/></svg></span>
+                <span class="map-cat-text"><span class="map-cat-title">Restaurants</span><span class="map-cat-sub">Pubs, restaurants &amp; cafes</span></span>
+                <svg class="map-cat-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+              </button>
+              <button type="button" class="map-cat-btn" data-cat="groceries">
+                <span class="map-cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.2 11.6a2 2 0 002 1.4h7.6a2 2 0 002-1.6L20 8H6"/><circle cx="9" cy="20" r="1"/><circle cx="17" cy="20" r="1"/></svg></span>
+                <span class="map-cat-text"><span class="map-cat-title">Groceries</span><span class="map-cat-sub">Supermarkets &amp; shops</span></span>
+                <svg class="map-cat-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+              </button>
+              <button type="button" class="map-cat-btn" data-cat="attractions">
+                <span class="map-cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18l5-8 4 5 3-4 6 7z"/><circle cx="8" cy="7" r="2"/></svg></span>
+                <span class="map-cat-text"><span class="map-cat-title">Attractions</span><span class="map-cat-sub">Things to see &amp; do</span></span>
+                <svg class="map-cat-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+              </button>
+            </div>
+
+            <div class="map-list-view" id="mapListView" hidden>
+              <button type="button" class="map-list-back" id="mapListBack">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                <span id="mapListBackLabel">Categories</span>
+              </button>
+              <div class="location-list" id="locationList" aria-label="Nearby places">
+                <p class="location-list-status" id="locationListStatus">Loading nearby places&hellip;</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="location-fallback" id="locationFallback" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.5l6-2 6 2 6-2v13l-6 2-6-2-6 2z"/><path d="M9 4.5v13M15 6.5v13"/></svg>
+          <p id="locationFallbackMsg">Map couldn&rsquo;t load right now.</p>
+        </div>
+      </div>
+
+      <div class="xmap-stage">
+        <div class="xmap" data-flipped="false">
+          <div class="xmap-card">
+            <div class="xmap-flipper">
+              <button type="button" class="xmap-face xmap-front" aria-label="Flip the Corndon Hill circular hike card to see photos and walk details">
+                <img class="xmap-img" src="assets/images/corndon-hill.png" width="814" height="541" alt="Route map of the Corndon Hill circular hike, starting from Priestweston" loading="lazy" decoding="async">
+                <span class="xmap-shade" aria-hidden="true"></span>
+                <span class="xmap-kicker">Popular walks near Brocks Den</span>
+                <span class="xmap-text">
+                  <span class="xmap-title">Corndon Hill circular hike</span>
+                  <span class="xmap-line"></span>
+                </span>
+              </button>
+
+              <div class="xmap-face xmap-back" inert>
+                <div class="xmap-gallery" role="region" aria-roledescription="carousel" aria-label="Photos from the Corndon Hill circular hike" tabindex="0">
+                  <img class="xmap-photo" src="assets/images/walks/corndon-1.webp" width="1280" height="536" alt="Green hills and brown bracken looking out over the border countryside from Corndon Hill" loading="lazy" decoding="async">
+                  <img class="xmap-photo" src="assets/images/walks/corndon-2.webp" width="1280" height="536" alt="A patchwork of golden fields with blue hills in the distance" loading="lazy" decoding="async">
+                  <img class="xmap-photo" src="assets/images/walks/corndon-3.webp" width="1400" height="624" alt="Lichen-covered rocks on the hillside with long views down the valley" loading="lazy" decoding="async">
+                  <img class="xmap-photo" src="assets/images/walks/corndon-4.webp" width="1400" height="624" alt="The summit trig pillar with the valley spread out below" loading="lazy" decoding="async">
+                  <img class="xmap-photo" src="assets/images/walks/corndon-5.webp" width="1095" height="564" alt="The Miners Arms, a stone-built country pub beside the lane" loading="lazy" decoding="async">
+                </div>
+                <button type="button" class="xmap-nav xmap-prev" aria-label="Previous photo">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+                </button>
+                <button type="button" class="xmap-nav xmap-next" aria-label="Next photo">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+                </button>
+                <button type="button" class="xmap-close" aria-label="Flip the card back">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                </button>
+                <span class="xmap-count" aria-live="polite">1 / 5</span>
+                <div class="xmap-stats">
+                  <span class="xmap-stat"><strong>6.2 mi</strong></span>
+                  <span class="xmap-stat"><strong>1,427 ft</strong> elevation gain</span>
+                  <span class="xmap-stat"><strong>3.5 - 4 hr</strong></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="xmap" data-flipped="false">
+          <div class="xmap-card">
+            <div class="xmap-flipper">
+              <button type="button" class="xmap-face xmap-front" aria-label="Flip the Montgomery Castle circular hike card to see photos">
+                <img class="xmap-img" src="assets/images/montgomery-castle.png" width="659" height="523" alt="Route map of the Montgomery Castle circular hike, looping around the town" loading="lazy" decoding="async">
+                <span class="xmap-shade" aria-hidden="true"></span>
+                <span class="xmap-kicker">Popular walks near Brocks Den</span>
+                <span class="xmap-text">
+                  <span class="xmap-title">Montgomery Castle circular hike</span>
+                  <span class="xmap-line"></span>
+                </span>
+              </button>
+
+              <div class="xmap-face xmap-back" inert>
+                <div class="xmap-gallery" role="region" aria-roledescription="carousel" aria-label="Photos from the Montgomery Castle circular hike" tabindex="0">
+                  <img class="xmap-photo" src="assets/images/walks/montgomery-1.webp" width="1239" height="686" alt="The ruined walls and gatehouse of Montgomery Castle under an evening sky" loading="lazy" decoding="async">
+                  <img class="xmap-photo" src="assets/images/walks/montgomery-2.webp" width="1189" height="520" alt="The footbridge leading up to the castle ruins" loading="lazy" decoding="async">
+                  <img class="xmap-photo" src="assets/images/walks/montgomery-3.webp" width="1400" height="610" alt="Looking down over Montgomery and the surrounding farmland from the hill" loading="lazy" decoding="async">
+                  <img class="xmap-photo" src="assets/images/walks/montgomery-4.webp" width="1202" height="610" alt="A tall stone monument on the hilltop against a wide blue sky" loading="lazy" decoding="async">
+                </div>
+                <button type="button" class="xmap-nav xmap-prev" aria-label="Previous photo">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+                </button>
+                <button type="button" class="xmap-nav xmap-next" aria-label="Next photo">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+                </button>
+                <button type="button" class="xmap-close" aria-label="Flip the card back">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                </button>
+                <span class="xmap-count" aria-live="polite">1 / 4</span>
+                <div class="xmap-stats">
+                  <span class="xmap-stat"><strong>4.8 mi</strong></span>
+                  <span class="xmap-stat"><strong>866 ft</strong> elevation gain</span>
+                  <span class="xmap-stat"><strong>2 - 2.5 hr</strong></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="xmap" data-flipped="false">
+          <div class="xmap-card">
+            <div class="xmap-flipper">
+              <button type="button" class="xmap-face xmap-front" aria-label="Flip the Stiperstones and Devil&rsquo;s Chair circular hike card to see photos and walk details">
+                <img class="xmap-img" src="assets/images/stiperstones.png" width="897" height="695" alt="Route map of the Stiperstones and Devil&rsquo;s Chair circular hike" loading="lazy" decoding="async">
+                <span class="xmap-shade" aria-hidden="true"></span>
+                <span class="xmap-kicker">Popular walks near Brocks Den</span>
+                <span class="xmap-text">
+                  <span class="xmap-title">Stiperstones and Devil&rsquo;s Chair circular hike</span>
+                  <span class="xmap-line"></span>
+                </span>
+              </button>
+
+              <div class="xmap-face xmap-back" inert>
+                <div class="xmap-gallery" role="region" aria-roledescription="carousel" aria-label="Photos from the Stiperstones and Devil&rsquo;s Chair circular hike" tabindex="0">
+                  <img class="xmap-photo" src="assets/images/walks/stiperstones-1.webp" width="1241" height="598" alt="A craggy quartzite outcrop rising against a blue sky and big clouds" loading="lazy" decoding="async">
+                  <img class="xmap-photo" src="assets/images/walks/stiperstones-2.webp" width="1243" height="610" alt="A rocky summit tor topped with a trig pillar under grey cloud" loading="lazy" decoding="async">
+                  <img class="xmap-photo" src="assets/images/walks/stiperstones-3.webp" width="1400" height="636" alt="Boulders and heather with green fields stretching away into the valley" loading="lazy" decoding="async">
+                  <img class="xmap-photo" src="assets/images/walks/stiperstones-4.webp" width="1400" height="550" alt="A tall stack of weathered rock with a wide view over the hills" loading="lazy" decoding="async">
+                </div>
+                <button type="button" class="xmap-nav xmap-prev" aria-label="Previous photo">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+                </button>
+                <button type="button" class="xmap-nav xmap-next" aria-label="Next photo">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+                </button>
+                <button type="button" class="xmap-close" aria-label="Flip the card back">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                </button>
+                <span class="xmap-count" aria-live="polite">1 / 4</span>
+                <div class="xmap-stats">
+                  <span class="xmap-stat"><strong>2.9 mi</strong></span>
+                  <span class="xmap-stat"><strong>436 ft</strong> elevation gain</span>
+                  <span class="xmap-stat"><strong>1 - 1.5 hr</strong></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="xmap" data-flipped="false">
+          <div class="xmap-card">
+            <div class="xmap-flipper">
+              <button type="button" class="xmap-face xmap-front" aria-label="Flip the Offa&rsquo;s Dyke Path card to see photos and walk details">
+                <img class="xmap-img" src="assets/images/offas-dyke.png" width="1036" height="664" alt="Route map of the Offa&rsquo;s Dyke Path walk, running north from near Churchstoke towards Welshpool" loading="lazy" decoding="async">
+                <span class="xmap-shade" aria-hidden="true"></span>
+                <span class="xmap-kicker">Popular walks near Brocks Den</span>
+                <span class="xmap-text">
+                  <span class="xmap-title">Offa&rsquo;s Dyke Path</span>
+                  <span class="xmap-line"></span>
+                </span>
+              </button>
+
+              <div class="xmap-face xmap-back" inert>
+                <div class="xmap-gallery" role="region" aria-roledescription="carousel" aria-label="Photos from the Offa&rsquo;s Dyke Path walk" tabindex="0">
+                  <img class="xmap-photo" src="assets/images/walks/offas-dyke-1.webp" width="1240" height="722" alt="A still, green-covered pond in the woods beside a mossy brick wall" loading="lazy" decoding="async">
+                  <img class="xmap-photo" src="assets/images/walks/offas-dyke-2.webp" width="1224" height="606" alt="Sheep grazing on a grassy hillside above a wooded valley" loading="lazy" decoding="async">
+                  <img class="xmap-photo" src="assets/images/walks/offas-dyke-3.webp" width="1238" height="602" alt="Oak trees and green fields stretching away under a blue sky" loading="lazy" decoding="async">
+                  <img class="xmap-photo" src="assets/images/walks/offas-dyke-4.webp" width="1400" height="638" alt="A red sandstone and iron bridge over the river with a sheep on the bank" loading="lazy" decoding="async">
+                </div>
+                <button type="button" class="xmap-nav xmap-prev" aria-label="Previous photo">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+                </button>
+                <button type="button" class="xmap-nav xmap-next" aria-label="Next photo">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+                </button>
+                <button type="button" class="xmap-close" aria-label="Flip the card back">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                </button>
+                <span class="xmap-count" aria-live="polite">1 / 4</span>
+                <div class="xmap-stats">
+                  <span class="xmap-stat"><strong>12.1 mi</strong></span>
+                  <span class="xmap-stat"><strong>1,374 ft</strong> elevation gain</span>
+                  <span class="xmap-stat"><strong>5.5 - 6 hr</strong></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="reviews" id="reviews">
+  <div class="reviews-inner">
+    <div class="reviews-head">
+      <span class="gallery-eyebrow">Reviews</span>
+      <h2 class="gallery-heading">What our guests say</h2>
+      <p class="reviews-note">Rated 5.0 from 268 guest reviews on Airbnb. Here are a few kind words from people who have stayed.</p>
+    </div>
+
+    <div class="reviews-cols" id="reviewsCols" role="region" aria-label="Guest reviews">
+      <div class="reviews-col" style="--dur:26s"></div>
+      <div class="reviews-col" style="--dur:32s"></div>
+      <div class="reviews-col" style="--dur:29s"></div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer" id="contact">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="brand">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M12 2L3 20H21L12 2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+            <path d="M12 2V20" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M7.5 12H16.5" stroke="currentColor" stroke-width="1.6"/>
+          </svg>
+          Brocks Den
+        </div>
+        <p class="footer-tagline">A Mongolian yurt on a Welsh hilltop, with a wood-fired hot tub, big skies and no light pollution.</p>
+      </div>
+
+      <nav aria-label="Footer">
+        <h2 class="footer-heading">Explore</h2>
+        <ul class="footer-links">
+          <li><a href="#amenities">Amenities</a></li>
+          <li><a href="#gallery">Gallery</a></li>
+          <li><a href="#location">Location and walks</a></li>
+          <li><a href="#reviews">Reviews</a></li>
+          <li><a href="contact.html">Contact us</a></li>
+        </ul>
+      </nav>
+
+      <div>
+        <h2 class="footer-heading">Find us</h2>
+        <address class="footer-address">
+          Brocks Den<br>
+          Great Argoed, Church Stoke<br>
+          Montgomery, SY15 6TH<br>
+          Wales
+        </address>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>&copy; <span id="footerYear">2026</span> Brocks Den. All rights reserved.</span>
+      <a class="footer-top-link" href="#">Back to top</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var amenities = [
+    { id:1, title:"Hot tub", tag:"Wood-fired", content:"Sink into the wood-fired hot tub and enjoy a relaxing soak beneath the stars, surrounded by the peace and quiet of the countryside.", status:"included", relatedIds:[2,5],
+      features:["Wood burner","Seats 2","Wood provided","Breathtaking countryside views"],
+      image:"assets/images/hot-tub-card.png",
+      icon:'<path d="M3 15c1.4-1.4 2.9-1.4 4.3 0 1.4 1.4 2.9 1.4 4.3 0 1.4-1.4 2.9-1.4 4.3 0 1.4 1.4 2.9 1.4 4.3 0"/><path d="M3 19c1.4-1.4 2.9-1.4 4.3 0 1.4 1.4 2.9 1.4 4.3 0 1.4-1.4 2.9-1.4 4.3 0 1.4 1.4 2.9 1.4 4.3 0"/><path d="M8 10a3.5 3.5 0 117 0c0 1.8-1.8 2.6-1.8 4.5"/>' },
+    { id:2, title:"Kitchen", tag:"Fully equipped", content:"Brock has an inside kitchen with an oven, two gas rings and all the pots, pans and cooking equipment you'll need conjure up a feast", status:"included", relatedIds:[1,3],
+      features:["Oven","Two gas rings","Pots, pans & cooking equipment"],
+      image:"assets/images/kitchen-card.avif",
+      icon:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16"/><circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><rect x="7" y="12" width="10" height="6" rx="1"/>' },
+    { id:3, title:"King size bed", tag:"Comfy & cosy", content:"Inside Brock is a comfy King size bed, and a wood burner for those chilly nights.", status:"included", relatedIds:[2,4],
+      features:["King size bed","Wood burner","USB charging points"],
+      image:"assets/images/bed-card.avif",
+      icon:'<path d="M2 20v-8a2 2 0 012-2h16a2 2 0 012 2v8"/><path d="M4 10V6a2 2 0 012-2h12a2 2 0 012 2v4"/><path d="M12 4v6"/><path d="M2 18h20"/>' },
+    { id:4, title:"Valley views", tag:"Hilltop setting", content:"Brocks Den is positioned on the highest point of our small farm, with incredible views into Wales. With no neighbours or light pollution you can enjoy the dawn chorus and the amazing night sky.", status:"included", relatedIds:[3],
+      features:["Views across the Welsh Marches to England","Amazing night sky","No light pollution"],
+      image:"assets/images/valley-views-card.avif",
+      icon:'<path d="M3 19l5.5-9 3.5 5 2.5-3.5L20 19H3z"/>' },
+    { id:5, title:"Fire pit BBQ", tag:"Seasonal", content:"Gather round the Indian fire pit for a BBQ under the stars, with a table and chairs to sit back and take in the peace and quiet of the countryside.", status:"seasonal", relatedIds:[1],
+      features:["Indian fire pit","BBQ","Table & chairs","Countryside views"],
+      image:"assets/images/fire-pit-card.avif",
+      icon:'<path d="M4 11a8 8 0 0116 0"/><path d="M3 11h18"/><path d="M6 11l-1.5 8"/><path d="M18 11l1.5 8"/><path d="M12 11v8"/><path d="M10 4h4"/>' }
+  ];
+
+  var stage = document.getElementById('orbitalStage');
+  var nodesLayer = document.getElementById('orbitalNodes');
+
+  var expandedId = null;
+  var autoRotate = true;
+  var rotationAngle = 0;
+  var timer = null;
+  var orbitEl = stage.parentNode;
+  function orbitScale(){
+    return parseFloat(getComputedStyle(orbitEl).getPropertyValue('--s')) || 1;
+  }
+  var RADIUS = 138 * orbitScale();
+
+  function relatedIdsOf(id){
+    var item = amenities.filter(function(a){ return a.id === id; })[0];
+    return item ? item.relatedIds : [];
+  }
+
+  function buildNodes(){
+    nodesLayer.innerHTML = '';
+    amenities.forEach(function(item){
+      var node = document.createElement('div');
+      node.className = 'orbital-node';
+      node.dataset.id = item.id;
+      node.innerHTML =
+        '<div class="orbital-node-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' + item.icon + '</svg></div>' +
+        '<div class="orbital-node-label">' + item.title + '</div>';
+      node.addEventListener('click', function(e){
+        e.stopPropagation();
+        toggleNode(item.id);
+      });
+      nodesLayer.appendChild(node);
+    });
+  }
+
+  function renderCard(item){
+    var card = document.createElement('div');
+    card.className = 'orbital-card';
+    if(item.image){ card.classList.add('has-image'); }
+    card.addEventListener('click', function(e){ e.stopPropagation(); });
+
+    var featureList = (item.features && item.features.length) ? item.features : item.relatedIds.map(function(rid){
+      var rel = amenities.filter(function(a){ return a.id === rid; })[0];
+      return rel ? rel.title : '';
+    });
+    var featureTags = featureList.map(function(f){
+      return '<span class="orbital-feature-tag">' + f + '</span>';
+    }).join('');
+
+    card.innerHTML =
+      (item.image ? '<div class="orbital-card-media" style="background-image:url(' + item.image + ')"></div>' : '') +
+      '<div class="orbital-card-body">' +
+        '<div class="orbital-card-top">' +
+          (item.image ? '' : '<span class="orbital-badge ' + item.status + '">' + (item.status === 'included' ? 'INCLUDED' : 'SEASONAL') + '</span>') +
+          '<span class="orbital-card-tag">' + item.tag + '</span>' +
+        '</div>' +
+        '<div class="orbital-card-title">' + item.title + '</div>' +
+        '<div class="orbital-card-content">' + item.content + '</div>' +
+        (featureList.length ? (
+          '<div class="orbital-features">' +
+            '<div class="orbital-features-label">Features</div>' +
+            '<div class="orbital-features-list">' + featureTags + '</div>' +
+          '</div>'
+        ) : '') +
+      '</div>';
+    return card;
+  }
+
+  function updatePositions(){
+    var total = amenities.length;
+    var relatedActive = expandedId ? relatedIdsOf(expandedId) : [];
+    amenities.forEach(function(item, index){
+      var node = nodesLayer.querySelector('.orbital-node[data-id="' + item.id + '"]');
+      if(!node) return;
+      var angle = ((index/total)*360 + rotationAngle) % 360;
+      var radian = angle*Math.PI/180;
+      var x = RADIUS*Math.cos(radian);
+      var y = RADIUS*Math.sin(radian);
+      var z = Math.round(100+50*Math.cos(radian));
+      var isExpanded = expandedId === item.id;
+      var opacity = isExpanded ? 1 : Math.max(0.65, Math.min(1, 0.65+0.35*((1+Math.sin(radian))/2)));
+
+      node.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+      node.style.zIndex = isExpanded ? 200 : z;
+      node.style.opacity = opacity;
+      node.classList.toggle('expanded', isExpanded);
+      node.classList.toggle('related', relatedActive.indexOf(item.id) !== -1);
+
+      var card = node.querySelector('.orbital-card');
+      if(isExpanded && !card){
+        node.appendChild(renderCard(item));
+      } else if(!isExpanded && card){
+        card.remove();
+      }
+    });
+  }
+
+  function centerOn(id){
+    var index = amenities.map(function(a){ return a.id; }).indexOf(id);
+    var total = amenities.length;
+    var targetAngle = (index/total)*360;
+    rotationAngle = 270 - targetAngle;
+  }
+
+  function toggleNode(id){
+    if(expandedId === id){
+      expandedId = null;
+      autoRotate = true;
+    } else {
+      expandedId = id;
+      autoRotate = false;
+      centerOn(id);
+    }
+    updatePositions();
+  }
+
+  function tick(){
+    if(autoRotate){
+      rotationAngle = (rotationAngle + 0.3) % 360;
+    }
+    updatePositions();
+  }
+
+  buildNodes();
+  updatePositions();
+  timer = setInterval(tick, 50);
+
+  window.addEventListener('resize', function(){
+    RADIUS = 138 * orbitScale();
+    updatePositions();
+  });
+  stage.addEventListener('click', function(e){
+    if(e.target === stage){
+      expandedId = null;
+      autoRotate = true;
+      updatePositions();
+    }
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && expandedId !== null){
+      expandedId = null;
+      autoRotate = true;
+      updatePositions();
+    }
+  });
+})();
+
+  (function(){
+    var tour = document.getElementById('tour');
+    var closeBtn = document.getElementById('tourClose');
+    var tiles = Array.prototype.slice.call(document.querySelectorAll('.mosaic-tile'));
+    var showAll = document.getElementById('showAll');
+    var opener = null;
+
+    function open(i, from){
+      opener = from;
+      tour.hidden = false;
+      document.body.style.overflow = 'hidden';
+      tour.scrollTop = 0;
+      var item = tour.querySelector('.tour-item[data-index="' + i + '"]');
+      if(item && i > 0) item.scrollIntoView({ block: 'start' });
+      closeBtn.focus({ preventScroll: true });
+    }
+    function close(){
+      tour.hidden = true;
+      document.body.style.overflow = '';
+      if(opener && opener.focus) opener.focus({ preventScroll: true });
+    }
+
+    tiles.forEach(function(t){
+      t.addEventListener('click', function(){ open(+t.dataset.index, t); });
+    });
+    showAll.addEventListener('click', function(){ open(0, showAll); });
+    closeBtn.addEventListener('click', close);
+    document.addEventListener('keydown', function(e){
+      if(!tour.hidden && e.key === 'Escape') close();
+    });
+
+    function slideTo(target){
+      var root = document.documentElement;
+      var start = window.pageYOffset;
+      var max = root.scrollHeight - window.innerHeight;
+      // target is an element to slide to, or a number meaning a position on the page
+      var top = (typeof target === 'number') ? target : target.getBoundingClientRect().top + start;
+      var end = Math.max(0, Math.min(max, Math.round(top)));
+      var dist = end - start;
+      if(window.matchMedia('(prefers-reduced-motion: reduce)').matches || Math.abs(dist) < 2){
+        window.scrollTo(0, end);
+        return;
+      }
+      var dur = Math.min(1600, Math.max(800, Math.abs(dist) * 0.6));
+      var t0 = null, stopped = false;
+      var prevBehavior = root.style.scrollBehavior;
+      var events = ['wheel', 'touchstart', 'keydown', 'mousedown'];
+      root.style.scrollBehavior = 'auto';
+
+      function finish(){
+        stopped = true;
+        root.style.scrollBehavior = prevBehavior;
+        events.forEach(function(ev){ window.removeEventListener(ev, finish); });
+      }
+      events.forEach(function(ev){ window.addEventListener(ev, finish, { passive: true }); });
+
+      function step(ts){
+        if(stopped) return;
+        if(t0 === null) t0 = ts;
+        var p = Math.min(1, (ts - t0) / dur);
+        var eased = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+        window.scrollTo(0, start + dist * eased);
+        if(p < 1) requestAnimationFrame(step); else finish();
+      }
+      requestAnimationFrame(step);
+    }
+
+    window.brocksSlideTo = slideTo;
+
+    var seeGallery = document.getElementById('seeGallery');
+    if(seeGallery) seeGallery.addEventListener('click', function(){
+      slideTo(document.getElementById('gallery'));
+    });
+
+    // every link that jumps to a place on this page slides the same way
+    document.addEventListener('click', function(e){
+      var a = e.target.closest ? e.target.closest('a[href^="#"]') : null;
+      if(!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      var id = a.getAttribute('href').slice(1);
+      if(id === '' || id === 'top'){ e.preventDefault(); slideTo(0); return; }
+      var target = document.getElementById(id);
+      if(!target) return;
+      e.preventDefault();
+      slideTo(target);
+    });
+  })();
+
+  /* ---------- Location: walk cards (flip to photos + stats) ---------- */
+  (function(){
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var cards = Array.prototype.slice.call(document.querySelectorAll('.xmap'));
+
+    function setup(root){
+      var card = root.querySelector('.xmap-card');
+      var front = root.querySelector('.xmap-front');
+      var back = root.querySelector('.xmap-back');
+      var closeBtn = root.querySelector('.xmap-close');
+      var gallery = root.querySelector('.xmap-gallery');
+      var prev = root.querySelector('.xmap-prev');
+      var next = root.querySelector('.xmap-next');
+      var count = root.querySelector('.xmap-count');
+      var photos = gallery.querySelectorAll('.xmap-photo');
+      var flipped = false;
+      var current = 0;
+      var glideUntil = 0;
+
+      function setFlipped(on){
+        flipped = on;
+        root.setAttribute('data-flipped', String(on));
+        front.inert = on;
+        back.inert = !on;
+        card.style.setProperty('--rx', '0deg');
+        card.style.setProperty('--ry', '0deg');
+        // wait for the flip to start before moving focus to the visible side
+        setTimeout(function(){ (on ? closeBtn : front).focus({ preventScroll: true }); }, 60);
+        // the card changes width while it flips, so re-align the gallery once it settles
+        setTimeout(function(){ gallery.scrollLeft = current * gallery.clientWidth; }, 750);
+      }
+
+      front.addEventListener('click', function(){ setFlipped(true); });
+      closeBtn.addEventListener('click', function(){ setFlipped(false); });
+      document.addEventListener('keydown', function(e){
+        if(flipped && e.key === 'Escape') setFlipped(false);
+      });
+
+      function updateCount(){
+        count.textContent = (current + 1) + ' / ' + photos.length;
+      }
+      function go(i){
+        current = Math.max(0, Math.min(photos.length - 1, i));
+        glideUntil = Date.now() + 600; // ignore scroll events caused by our own smooth scroll
+        gallery.scrollTo({ left: current * gallery.clientWidth, behavior: 'smooth' });
+        updateCount();
+      }
+
+      if(prev) prev.addEventListener('click', function(){ go(current - 1); });
+      if(next) next.addEventListener('click', function(){ go(current + 1); });
+      gallery.addEventListener('scroll', function(){
+        if(Date.now() < glideUntil) return;
+        current = Math.round(gallery.scrollLeft / Math.max(1, gallery.clientWidth));
+        updateCount();
+      }, { passive: true });
+      gallery.addEventListener('keydown', function(e){
+        if(e.key === 'ArrowRight'){ e.preventDefault(); go(current + 1); }
+        else if(e.key === 'ArrowLeft'){ e.preventDefault(); go(current - 1); }
+      });
+      window.addEventListener('resize', function(){ gallery.scrollLeft = current * gallery.clientWidth; });
+
+      // gentle 3D tilt that follows the pointer (front side only)
+      if(!reduce){
+        root.addEventListener('mousemove', function(e){
+          if(flipped) return;
+          var r = card.getBoundingClientRect();
+          var mx = Math.max(-50, Math.min(50, e.clientX - (r.left + r.width / 2)));
+          var my = Math.max(-50, Math.min(50, e.clientY - (r.top + r.height / 2)));
+          card.style.setProperty('--ry', (mx / 50 * 8) + 'deg');
+          card.style.setProperty('--rx', (-my / 50 * 8) + 'deg');
+        });
+        root.addEventListener('mouseleave', function(){
+          card.style.setProperty('--rx', '0deg');
+          card.style.setProperty('--ry', '0deg');
+        });
+      }
+    }
+
+    cards.forEach(setup);
+  })();
+
+  /* ---------- Hero: Airbnb-style date and guest pickers ---------- */
+  (function(){
+    var bar = document.getElementById('bookingBar');
+    if(!bar) return;
+
+    var fIn = document.getElementById('fieldCheckin');
+    var fOut = document.getElementById('fieldCheckout');
+    var fGuests = document.getElementById('fieldGuests');
+    var valIn = document.getElementById('valCheckin');
+    var valOut = document.getElementById('valCheckout');
+    var valGuests = document.getElementById('valGuests');
+
+    var MAX_GUESTS = 2;   // the yurt sleeps 2
+    var MIN_NIGHTS = 2;   // minimum stay
+    var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    var DOWS = ['M','T','W','T','F','S','S'];
+
+    // Dates that can't be booked, as 'YYYY-MM-DD' strings. The owner dashboard will feed this later:
+    //   window.brocksSetUnavailable(['2026-11-12', '2026-11-13'])
+    var unavailable = {};
+    window.brocksSetUnavailable = function(list){
+      unavailable = {};
+      (list || []).forEach(function(d){ unavailable[d] = true; });
+      // dates picked earlier may have been taken since
+      if(start && !canStart(start)){ start = end = hover = null; mode = 'in'; save(); }
+      else if(start && end && !rangeFree(start, end)){ end = null; mode = 'out'; save(); }
+      paint();
+    };
+
+    function pad(n){ return n < 10 ? '0' + n : String(n); }
+    function key(y, m, d){ return y + '-' + pad(m + 1) + '-' + pad(d); }
+    function keyOf(dt){ return key(dt.getFullYear(), dt.getMonth(), dt.getDate()); }
+    function parse(k){ var p = k.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+    function fmt(k){ return parse(k).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }); }
+    function nightsBetween(a, b){ return Math.round((parse(b) - parse(a)) / 86400000); }
+    function addDays(k, n){ var dt = parse(k); dt.setDate(dt.getDate() + n); return keyOf(dt); }
+
+    var now = new Date();
+    var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    var todayKey = keyOf(today);
+
+    var start = null, end = null, hover = null;
+    var mode = 'in';          // what the next click on a day sets: 'in' or 'out'
+    var view = { y: today.getFullYear(), m: today.getMonth() };
+    var needIn = false, needOut = false;   // show the red "please choose" ring
+    var openPop = null;       // 'dates' | 'guests' | null
+    var cells = [];
+
+    // free of unavailable nights from a (inclusive) up to b (exclusive)?
+    function rangeFree(a, b){
+      var dt = parse(a), last = parse(b);
+      while(dt < last){
+        if(unavailable[keyOf(dt)]) return false;
+        dt.setDate(dt.getDate() + 1);
+      }
+      return true;
+    }
+    // a check-in needs its first MIN_NIGHTS nights free, otherwise no valid stay could start there
+    function canStart(k){ return k >= todayKey && rangeFree(k, addDays(k, MIN_NIGHTS)); }
+    function canEnd(k){ return mode === 'out' && !!start && nightsBetween(start, k) >= MIN_NIGHTS && rangeFree(start, k); }
+    // days inside the minimum stay can be neither a check-out nor a new check-in
+    function tooShort(k){ return mode === 'out' && !!start && k > start && nightsBetween(start, k) < MIN_NIGHTS; }
+
+    // ----- build the pop-ups (added to the page body so nothing can clip them)
+    var datePop = document.createElement('div');
+    datePop.className = 'bk-pop bk-date';
+    datePop.id = 'datePop';
+    datePop.setAttribute('role', 'dialog');
+    datePop.setAttribute('aria-label', 'Choose your dates');
+    datePop.tabIndex = -1;
+    datePop.innerHTML =
+      '<button type="button" class="bk-nav bk-prev" aria-label="Previous month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>' +
+      '<button type="button" class="bk-nav bk-next" aria-label="Next month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>' +
+      '<div class="bk-months"></div>' +
+      '<div class="bk-foot"><span class="bk-status" aria-live="polite"></span><button type="button" class="bk-clear">Clear dates</button></div>';
+    document.body.appendChild(datePop);
+
+    var monthsEl = datePop.querySelector('.bk-months');
+    var prevBtn = datePop.querySelector('.bk-prev');
+    var nextBtn = datePop.querySelector('.bk-next');
+    var statusEl = datePop.querySelector('.bk-status');
+    var clearBtn = datePop.querySelector('.bk-clear');
+
+    var guestPop = document.createElement('div');
+    guestPop.className = 'bk-pop bk-guest';
+    guestPop.id = 'guestPop';
+    guestPop.setAttribute('role', 'dialog');
+    guestPop.setAttribute('aria-label', 'Choose the number of guests');
+    guestPop.tabIndex = -1;
+    var minus = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/></svg>';
+    var plus = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5v14"/></svg>';
+    var guestCount = MAX_GUESTS;
+    guestPop.innerHTML =
+      '<div class="bk-row" style="border-bottom:0;">' +
+        '<div><div class="bk-row-title">Guests</div></div>' +
+        '<div class="bk-step">' +
+          '<button type="button" data-d="-1" aria-label="Fewer guests">' + minus + '</button>' +
+          '<span class="bk-count" id="guestCount" aria-live="polite"></span>' +
+          '<button type="button" data-d="1" aria-label="More guests">' + plus + '</button>' +
+        '</div></div>' +
+      '<p class="bk-note">This place has a maximum of ' + MAX_GUESTS + ' guests.</p>';
+    document.body.appendChild(guestPop);
+
+    // ----- calendar
+    function buildMonth(y, m){
+      var wrap = document.createElement('div');
+      wrap.className = 'bk-month';
+      var title = document.createElement('div');
+      title.className = 'bk-month-title';
+      title.textContent = MONTHS[m] + ' ' + y;
+      wrap.appendChild(title);
+
+      var grid = document.createElement('div');
+      grid.className = 'bk-grid';
+      DOWS.forEach(function(d){
+        var h = document.createElement('div');
+        h.className = 'bk-dow';
+        h.textContent = d;
+        grid.appendChild(h);
+      });
+
+      var lead = (new Date(y, m, 1).getDay() + 6) % 7;
+      for(var i = 0; i < lead; i++){
+        var blank = document.createElement('div');
+        blank.className = 'bk-cell';
+        grid.appendChild(blank);
+      }
+      var days = new Date(y, m + 1, 0).getDate();
+      for(var d = 1; d <= days; d++){
+        var k = key(y, m, d);
+        var cell = document.createElement('div');
+        cell.className = 'bk-cell';
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'bk-day';
+        btn.textContent = d;
+        btn.dataset.k = k;
+        btn.addEventListener('click', onDay);
+        btn.addEventListener('mouseenter', onHover);
+        cell.appendChild(btn);
+        grid.appendChild(cell);
+        cells.push({ k: k, cell: cell, btn: btn });
+      }
+      wrap.appendChild(grid);
+      return wrap;
+    }
+
+    function render(){
+      cells = [];
+      monthsEl.innerHTML = '';
+      var m2 = view.m + 1, y2 = view.y;
+      if(m2 > 11){ m2 = 0; y2++; }
+      monthsEl.appendChild(buildMonth(view.y, view.m));
+      monthsEl.appendChild(buildMonth(y2, m2));
+      prevBtn.disabled = (view.y === today.getFullYear() && view.m === today.getMonth());
+      paint();
+    }
+
+    // update classes in place (cheap, and keeps the hovered button alive while previewing a range)
+    function paint(){
+      var lim = end || (mode === 'out' && start && hover && hover > start ? hover : null);
+      cells.forEach(function(c){
+        var k = c.k;
+        var past = k < todayKey;
+        var unav = !!unavailable[k] && !past;
+        var disabled = tooShort(k) || !(canStart(k) || canEnd(k));
+        var sel = (k === start || k === end);
+        c.btn.disabled = disabled;
+        c.btn.classList.toggle('is-unavailable', unav);
+        c.btn.classList.toggle('is-selected', sel);
+        c.btn.setAttribute('aria-pressed', sel ? 'true' : 'false');
+        c.btn.setAttribute('aria-label',
+          parse(k).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) +
+          (past ? ', in the past' : unav ? ', unavailable' : ''));
+        c.cell.classList.toggle('in-range', !!(start && lim && k > start && k < lim));
+        c.cell.classList.toggle('is-start', !!(start && lim && k === start));
+        c.cell.classList.toggle('has-range', !!(start && lim && k === start));
+        c.cell.classList.toggle('is-end', !!(start && lim && k === lim));
+      });
+
+      var minTxt = ' \u00b7 ' + MIN_NIGHTS + '-night minimum';
+      if(!start) statusEl.textContent = 'Select check-in date' + minTxt;
+      else if(!end) statusEl.textContent = 'Select check-out date' + minTxt;
+      else { var n = nightsBetween(start, end); statusEl.textContent = n + (n === 1 ? ' night' : ' nights'); }
+      clearBtn.disabled = !start;
+
+      if(start) needIn = false;
+      if(end) needOut = false;
+      fIn.classList.toggle('needs-date', needIn);
+      fOut.classList.toggle('needs-date', needOut);
+
+      valIn.textContent = start ? fmt(start) : 'Add date';
+      valIn.classList.toggle('is-empty', !start);
+      valOut.textContent = end ? fmt(end) : 'Add date';
+      valOut.classList.toggle('is-empty', !end);
+    }
+
+    // remember the choice for this visit, so it survives a trip to the checkout page and back
+    function save(){
+      try { sessionStorage.setItem('brocksBooking', JSON.stringify({ start: start, end: end, guests: guestCount })); } catch(e){}
+    }
+
+    function onDay(e){
+      var k = e.currentTarget.dataset.k;
+      if(canEnd(k)){ end = k; hover = null; mode = 'in'; }
+      else { start = k; end = null; hover = null; mode = 'out'; }
+      paint();
+      setExpanded();
+      save();
+    }
+    function onHover(e){
+      if(mode !== 'out' || !start || end) return;
+      var k = e.currentTarget.dataset.k;
+      var next = canEnd(k) ? k : null;
+      if(next !== hover){ hover = next; paint(); }
+    }
+    monthsEl.addEventListener('mouseleave', function(){ if(hover){ hover = null; paint(); } });
+
+    prevBtn.addEventListener('click', function(){
+      view.m--; if(view.m < 0){ view.m = 11; view.y--; }
+      render();
+    });
+    nextBtn.addEventListener('click', function(){
+      view.m++; if(view.m > 11){ view.m = 0; view.y++; }
+      render();
+    });
+    clearBtn.addEventListener('click', function(){
+      start = end = hover = null; mode = 'in';
+      paint();
+      save();
+    });
+
+    // ----- guests
+    function updateGuests(){
+      document.getElementById('guestCount').textContent = guestCount;
+      guestPop.querySelector('button[data-d="-1"]').disabled = guestCount <= 1;
+      guestPop.querySelector('button[data-d="1"]').disabled = guestCount >= MAX_GUESTS;
+      valGuests.textContent = guestCount + (guestCount === 1 ? ' guest' : ' guests');
+    }
+    guestPop.addEventListener('click', function(e){
+      var b = e.target.closest('button[data-d]');
+      if(!b || b.disabled) return;
+      guestCount = Math.max(1, Math.min(MAX_GUESTS, guestCount + (+b.dataset.d)));
+      updateGuests();
+      save();
+    });
+
+    // ----- opening, closing and positioning
+    var anchor = null;
+    function place(){
+      if(!openPop) return;
+      var pop = openPop === 'dates' ? datePop : guestPop;
+      var br = bar.getBoundingClientRect();
+      var gr = fGuests.getBoundingClientRect();
+      var w = pop.offsetWidth, h = pop.offsetHeight, gap = 12;
+      var vw = document.documentElement.clientWidth, vh = window.innerHeight;
+      var below = vh - br.bottom - gap, above = br.top - gap;
+      var top;
+      if(h <= below) top = br.bottom + gap;
+      else if(h <= above) top = br.top - gap - h;
+      else top = vh - h - 12; // no room either side (small screens): sit at the bottom like a sheet
+      top = Math.max(8, Math.min(top, vh - h - 8));
+      var left = openPop === 'dates' ? br.left : gr.right - w;
+      left = Math.max(12, Math.min(left, vw - w - 12));
+      pop.style.top = top + 'px';
+      pop.style.left = left + 'px';
+    }
+
+    function setExpanded(){
+      fIn.setAttribute('aria-expanded', String(openPop === 'dates' && mode === 'in'));
+      fOut.setAttribute('aria-expanded', String(openPop === 'dates' && mode === 'out'));
+      fGuests.setAttribute('aria-expanded', String(openPop === 'guests'));
+    }
+
+    function close(returnFocus){
+      var was = openPop;
+      openPop = null;
+      datePop.classList.remove('is-open');
+      guestPop.classList.remove('is-open');
+      setExpanded();
+      if(returnFocus && was){ (anchor || fIn).focus({ preventScroll: true }); }
+    }
+
+    function open(which, trigger){
+      anchor = trigger;
+      if(which === 'dates'){
+        guestPop.classList.remove('is-open');
+        // show the month of the chosen check-in, or this month
+        if(!datePop.classList.contains('is-open')){
+          var base = start ? parse(start) : today;
+          view = { y: base.getFullYear(), m: base.getMonth() };
+        }
+        openPop = 'dates';
+        render();
+      } else {
+        datePop.classList.remove('is-open');
+        openPop = 'guests';
+        updateGuests();
+      }
+      setExpanded();
+      place();
+      (which === 'dates' ? datePop : guestPop).classList.add('is-open');
+    }
+
+    fIn.addEventListener('click', function(){ mode = 'in'; if(openPop === 'dates' && fIn.getAttribute('aria-expanded') === 'true'){ close(false); return; } open('dates', fIn); setExpanded(); });
+    fOut.addEventListener('click', function(){
+      var wantOut = !!start && !end;
+      if(openPop === 'dates' && fOut.getAttribute('aria-expanded') === 'true'){ close(false); return; }
+      mode = wantOut ? 'out' : 'in';
+      open('dates', fOut); setExpanded();
+    });
+    fGuests.addEventListener('click', function(){
+      if(openPop === 'guests'){ close(false); return; }
+      open('guests', fGuests);
+    });
+
+    document.addEventListener('mousedown', function(e){
+      if(!openPop) return;
+      var t = e.target;
+      if(datePop.contains(t) || guestPop.contains(t) || bar.contains(t)) return;
+      close(false);
+    });
+    document.addEventListener('keydown', function(e){
+      if(openPop && e.key === 'Escape'){ e.preventDefault(); close(true); }
+    });
+    window.addEventListener('resize', place);
+    window.addEventListener('scroll', place, { passive: true });
+
+    // ----- Reserve now / Book now: prompt for dates, or go to the checkout page
+    var live = document.createElement('div');
+    live.className = 'bk-sr';
+    live.setAttribute('aria-live', 'assertive');
+    bar.parentNode.insertBefore(live, bar);
+
+    function shake(field){
+      field.classList.remove('is-shaking');
+      void field.offsetWidth;            // restart the animation if it is already running
+      field.classList.add('is-shaking');
+    }
+    Array.prototype.forEach.call([fIn, fOut], function(f){
+      f.addEventListener('animationend', function(){ f.classList.remove('is-shaking'); });
+    });
+
+    function reserve(e){
+      e.preventDefault();
+      if(!start || !end){
+        needIn = !start;
+        needOut = true;
+        paint();
+        var r = bar.getBoundingClientRect();
+        if(r.top < 0 || r.bottom > window.innerHeight){
+          var centred = window.pageYOffset + r.top - (window.innerHeight - r.height) / 2;
+          if(window.brocksSlideTo) window.brocksSlideTo(centred);
+          else bar.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }
+        if(needIn) shake(fIn);
+        shake(fOut);
+        live.textContent = '';
+        live.textContent = start ? 'Please choose your check-out date.' : 'Please choose your check-in and check-out dates.';
+        return;
+      }
+      window.location.href = 'checkout.html?checkin=' + start + '&checkout=' + end + '&guests=' + guestCount;
+    }
+    var reserveBtn = document.getElementById('reserveBtn');
+    var bookNowBtn = document.getElementById('bookNowBtn');
+    if(reserveBtn) reserveBtn.addEventListener('click', reserve);
+    if(bookNowBtn) bookNowBtn.addEventListener('click', reserve);
+
+    // bring back a choice made earlier in this visit
+    try {
+      var saved = JSON.parse(sessionStorage.getItem('brocksBooking') || 'null');
+      if(saved){
+        if(saved.guests >= 1 && saved.guests <= MAX_GUESTS) guestCount = saved.guests;
+        if(/^\d{4}-\d{2}-\d{2}$/.test(saved.start || '') && saved.start >= todayKey && canStart(saved.start)){
+          start = saved.start;
+          if(/^\d{4}-\d{2}-\d{2}$/.test(saved.end || '') && nightsBetween(start, saved.end) >= MIN_NIGHTS && rangeFree(start, saved.end)) end = saved.end;
+          else mode = 'out';
+        }
+      }
+    } catch(e){}
+
+    updateGuests();
+    paint();
+
+    // booked nights come from the backend; if it is not reachable the calendar simply shows no bookings
+    fetch('/api/availability', { cache: 'no-store' })
+      .then(function(res){ return res.ok ? res.json() : null; })
+      .then(function(data){ if(data && data.unavailable) window.brocksSetUnavailable(data.unavailable); })
+      .catch(function(){});
+  })();
+
+  /* ---------- Footer: current year ---------- */
+  (function(){
+    var y = document.getElementById('footerYear');
+    if(y) y.textContent = new Date().getFullYear();
+  })();
+
+  /* ---------- Reviews: scrolling columns ---------- */
+  (function(){
+    var wrap = document.getElementById('reviewsCols');
+    if(!wrap) return;
+
+    // Real guest reviews copied from the public Airbnb listing (5.0 from 268 reviews).
+    // To add or change one, edit this list: reviews are shared out across the three columns automatically.
+    var reviews = [
+      { text: "Looking for the fabled oasis of peace? Here it is! 🌿✨\nHad the most amazing stay at this luxurious Mongolian yurt, that is beautifully designed with so many thoughtful little touches and exceptionally well equipped with everything you could possibly ask for. Just when you think everything has already been thought of, you discover another little detail Donna and John have made sure to provide.\nThe scenery is absolutely breathtaking, whether you prefer to enjoy the peace or explore the surroundings.\nDonna was an outstanding host — communicative, so welcoming and always happy to help.\nCould have stayed for ages!", name: "Ronja", role: "Airbnb review · October 2026" },
+      { text: "Loved this place.\nUnique, peaceful, restful.\nI’ll definitely be returning.\nLog burner, open fire, fire fuelled hot tub. Absolute bliss.", name: "Karen", role: "Airbnb review · September 2026" },
+      { text: "We had an amazing time staying at this beautiful yurt. Stunning views, lots of rainbows in the day, and stars at night! The bed was super comfy. Donna was a great host and the yurt was very well equipped - sliders, dressing gowns etc were all provided. The hot tub was brilliant and easy to operate.", name: "Kim", role: "Airbnb review · September 2026" },
+      { text: "Absolutely amazing!\nWe loved our stay here! Paradise in nature!\nQuiet and peaceful which is what we were after. Stunning views looking over the Welsh countryside.\nDonna our host was very friendly and helped us out when needed. She told us about local places to eat, visit and activities.\nWe had such an amazing week and would definitely go back 😊 thank you so much for making our week so amazing!", name: "Richard", role: "Airbnb review · September 2026" },
+      { text: "We had an amazing time. Peaceful, private and beautiful with everything we needed for a fab holiday.", name: "Matt", role: "Airbnb review · August 2026" },
+      { text: "Absolutely amazing stay! The yurt is in such a beautiful, private location with incredible views and plenty of lovely places to explore nearby. Donna was so friendly and helpful, with some brilliant recommendations that made our stay even better. At night, the stars were absolutely breathtaking, we even saw shooting stars! Such a peaceful and special place to escape to. We loved every minute and will absolutely be returning very soon!", name: "Sean", role: "Airbnb review · August 2026" },
+      { text: "Me and my partner stayed here for his birthday and I couldn’t of booked a better spot! The yurt itself was so beautiful and quirky and had everything you could need and more. The hot tub was a lovely touch, we were even lucky to see some beautiful stars. Donna was the perfect host, friendly and caring and was very attentive and went above and beyond.\nIf you were in doubts about booking I wouldn’t hesitate because it is even more beautiful than the photos…\nThank you so much for making my partners birthday weekend so special :)\nWe hope to return 🖤🌼", name: "Ash", role: "Airbnb review · August 2026" },
+      { text: "Such a peaceful and enjoyable stay, Donna was a star and so helpful and welcoming, everything we needed was there and Donna made sure everything was perfect for us, would definitely recommend and will be staying again.", name: "William", role: "Airbnb review · August 2026" },
+      { text: "Donna was quite simply the most fantastic host I have ever experienced on any trip. We had the most magical proposal and engagement celebration and Donna made the whole experience incredible, she was accommodating, kind and all around fantastic with communication and brining my vision to life. We will be back again for many moons to come, we can’t thank you enough.\nAlso the most breathtaking views and beautiful stay. We loved it. Best few days of our lives so far!!", name: "Emily", role: "Airbnb review · August 2026" },
+      { text: "Perfect stay and host, highly recommended thank you", name: "Matthew", role: "Airbnb review · July 2026" },
+      { text: "The most beautiful stay ever! Donna was really responsive and had a couple of family members on hand to help with anything and everything- they were all fantastic 🥰\nIt was my birthday on the day we arrived and the yurt was set up with banners and rose petals. Everything about the stay was truly so special.\nThere isn’t one thing Donna hasn’t thought of in the yurt, and the instructions given for the hot tub and fire pit are really straightforward.\nWe are so grateful for everything and would have stayed for a month if we could! Will definitely be back ☺️ thank you!", name: "Bethany", role: "Airbnb review · July 2026" },
+      { text: "I wish that I could give Donna and this stay more stars! We booked in for two nights for a mini-moon after our hectic wedding weekend and it was the exact peace and quiet we were looking for. A secluded spot, amazing wood-heated hot tub that we got into at sunset, and the warmest welcome. Donna had decorated the tent to celebrate our being newly wed, which was such a kind touch! The tent is incredible as well - all the patterned woodwork and so much space. We utterly loved every second we stayed here and are already planning to come back and make it an anniversary regular. Thank you so very much Donna 💐", name: "Rosie", role: "Airbnb review · July 2026" }
+    ];
+
+    function esc(t){
+      return String(t).replace(/[&<>"]/g, function(c){ return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; });
+    }
+
+    function card(r, hidden){
+      var initial = esc((r.name || '?').trim().charAt(0).toUpperCase());
+      return '<div class="review-card"' + (hidden ? ' aria-hidden="true"' : '') + '>' +
+        '<p class="review-text">' + esc(r.text) + '</p>' +
+        '<div class="review-who">' +
+          '<span class="review-avatar" aria-hidden="true">' + initial + '</span>' +
+          '<span><span class="review-name">' + esc(r.name) + '</span><span class="review-role">' + esc(r.role) + '</span></span>' +
+        '</div>' +
+      '</div>';
+    }
+
+    var cols = wrap.querySelectorAll('.reviews-col');
+    Array.prototype.forEach.call(cols, function(col, ci){
+      var mine = reviews.filter(function(_, i){ return i % cols.length === ci; });
+      if(!mine.length) return;
+      // each half of the track must be taller than the visible window, so short lists are repeated;
+      // the whole half is then shown twice so the loop slides up by exactly half its height with no jump
+      var reps = Math.max(1, Math.ceil(3 / mine.length));
+      var half = [];
+      for(var k = 0; k < reps; k++) half = half.concat(mine);
+      var html = half.map(function(r, i){ return card(r, i >= mine.length); }).join('') +
+                 half.map(function(r){ return card(r, true); }).join('');
+      col.innerHTML = '<div class="reviews-track">' + html + '</div>';
+    });
+
+    // scroll at a steady, readable speed whatever the height of each column
+    var SPEED = [34, 28, 31]; // pixels per second, slightly different per column
+    function setSpeeds(){
+      Array.prototype.forEach.call(cols, function(col, ci){
+        var track = col.querySelector('.reviews-track');
+        if(!track || !track.offsetHeight) return; // column is hidden at this screen width
+        col.style.setProperty('--dur', Math.round((track.offsetHeight / 2) / SPEED[ci % SPEED.length]) + 's');
+      });
+    }
+    setSpeeds();
+    var resizeTimer;
+    window.addEventListener('resize', function(){ clearTimeout(resizeTimer); resizeTimer = setTimeout(setSpeeds, 150); });
+    if(document.fonts && document.fonts.ready) document.fonts.ready.then(setSpeeds);
+  })();
+
+  /* ---------- Location: read more / read less ---------- */
+  (function(){
+    var toggle = document.getElementById('locationNoteToggle');
+    var more = document.getElementById('locationNoteMore');
+    if(!toggle || !more) return;
+    toggle.addEventListener('click', function(){
+      var expanded = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!expanded));
+      more.hidden = expanded;
+      toggle.childNodes[0].textContent = expanded ? 'Read more' : 'Read less';
+    });
+  })();
+
+  /* ---------- Location: OpenStreetMap + Overpass (free, no API key or plan needed) ---------- */
+  (function(){
+    // Great Argoed, Church Stoke, Montgomery, SY15 6TH
+    var BROCKS_DEN = { lat: 52.511277, lng: -3.100423 };
+    var BROCKS_DEN_LABEL = "Brocks Den, Great Argoed, Church Stoke";
+
+    var mapEl = document.getElementById('locationMap');
+    var fallbackEl = document.getElementById('locationFallback');
+    var fallbackMsgEl = document.getElementById('locationFallbackMsg');
+    var listEl = document.getElementById('locationList');
+    var statusEl = document.getElementById('locationListStatus');
+    var panelEl = document.getElementById('mapPanel');
+    var searchInput = document.getElementById('mapSearchInput');
+    var dropEl = document.getElementById('mapPanelDrop');
+    var categoriesEl = document.getElementById('mapCategories');
+    var listViewEl = document.getElementById('mapListView');
+    var backBtn = document.getElementById('mapListBack');
+    var backLabel = document.getElementById('mapListBackLabel');
+    var originInput = document.getElementById('locationOrigin');
+    var goBtn = document.getElementById('locationGo');
+    var resultEl = document.getElementById('locationResult');
+    if(!mapEl) return;
+
+    function showFallback(msg){
+      if(fallbackMsgEl && msg) fallbackMsgEl.textContent = msg;
+      fallbackEl.hidden = false;
+    }
+
+    if(typeof L === 'undefined'){
+      showFallback('Map couldn’t load right now — please refresh the page.');
+      return;
+    }
+
+    function milesFrom(meters){
+      var mi = meters / 1609.344;
+      return (mi < 10 ? mi.toFixed(1) : Math.round(mi)) + ' mi';
+    }
+
+    var map = L.map(mapEl, { scrollWheelZoom: false, zoomControl: false }).setView([BROCKS_DEN.lat, BROCKS_DEN.lng], 13);
+    L.control.zoom({ position: 'topright' }).addTo(map);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    map.scrollWheelZoom.disable();
+    map.on('click', function(){ map.scrollWheelZoom.enable(); });
+    mapEl.addEventListener('mouseleave', function(){ map.scrollWheelZoom.disable(); });
+
+    var brocksIcon = L.divIcon({
+      className: '',
+      html: '<div style="width:40px;height:40px;border-radius:50%;background:#1c1a16;border:3px solid #f7f3ea;box-shadow:0 3px 10px rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center">' +
+        '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#f7f3ea" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>' +
+        '</div>',
+      iconSize: [40, 40],
+      iconAnchor: [20, 20]
+    });
+
+    L.marker([BROCKS_DEN.lat, BROCKS_DEN.lng], { icon: brocksIcon, zIndexOffset: 1000 })
+      .addTo(map)
+      .bindPopup('<b>' + BROCKS_DEN_LABEL + '</b>');
+
+    // ---- Directions: "driving from" (Nominatim geocoding + OSRM routing — free, no key) ----
+    var routeLayer = null;
+
+    function runDirections(){
+      var origin = originInput.value.trim();
+      if(!origin){
+        originInput.focus();
+        return;
+      }
+      resultEl.hidden = false;
+      resultEl.className = 'directions-result';
+      resultEl.textContent = 'Finding the route…';
+      goBtn.disabled = true;
+
+      fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(origin))
+        .then(function(res){ return res.json(); })
+        .then(function(results){
+          if(!results.length) throw new Error('not-found');
+          var lat = parseFloat(results[0].lat), lon = parseFloat(results[0].lon);
+          var url = 'https://router.project-osrm.org/route/v1/driving/' + lon + ',' + lat + ';' + BROCKS_DEN.lng + ',' + BROCKS_DEN.lat + '?overview=full&geometries=geojson';
+          return fetch(url).then(function(res){ return res.json(); });
+        })
+        .then(function(routeData){
+          if(routeData.code !== 'Ok' || !routeData.routes.length) throw new Error('no-route');
+          var route = routeData.routes[0];
+
+          if(routeLayer) map.removeLayer(routeLayer);
+          routeLayer = L.geoJSON(route.geometry, { style: { color: '#1c1a16', weight: 4, opacity: 0.85 } }).addTo(map);
+          map.fitBounds(routeLayer.getBounds(), { padding: [32, 32] });
+
+          var miles = (route.distance / 1609.344).toFixed(1);
+          var mins = Math.round(route.duration / 60);
+          var hrs = Math.floor(mins / 60);
+          var durText = hrs > 0 ? (hrs + 'h ' + (mins % 60) + 'm') : (mins + ' min');
+
+          resultEl.className = 'directions-result';
+          resultEl.textContent = miles + ' miles — about ' + durText + ' drive to ' + BROCKS_DEN_LABEL + '.';
+        })
+        .catch(function(){
+          resultEl.className = 'directions-result is-error';
+          resultEl.textContent = 'Couldn’t find a route from there — try a nearby town or postcode instead.';
+        })
+        .finally(function(){ goBtn.disabled = false; });
+    }
+
+    goBtn.addEventListener('click', runDirections);
+    originInput.addEventListener('keydown', function(e){
+      if(e.key === 'Enter'){ e.preventDefault(); runDirections(); }
+    });
+
+    // ---- Categories: each built from Overpass (OpenStreetMap) data, fetched on first use ----
+    var CATEGORIES = {
+      restaurants: {
+        title: 'Restaurants',
+        empty: 'No pubs, restaurants or cafes found nearby.',
+        color: '#c1502f',
+        query: ['restaurant', 'cafe', 'pub', 'bar'].map(function(a){
+          return 'node["amenity"="' + a + '"](around:8000,' + BROCKS_DEN.lat + ',' + BROCKS_DEN.lng + ');';
+        }).join(''),
+        typeLabel: function(tags){
+          if(tags.amenity === 'cafe') return 'Cafe';
+          if(tags.amenity === 'pub' || tags.amenity === 'bar') return 'Pub / Bar';
+          return 'Restaurant';
+        }
+      },
+      groceries: {
+        title: 'Groceries',
+        empty: 'No supermarkets or shops found nearby.',
+        color: '#4f7a52',
+        query: ['node', 'way'].map(function(t){
+          return t + '["shop"~"^(supermarket|convenience|greengrocer|general|farm|butcher|bakery|deli)$"](around:8000,' + BROCKS_DEN.lat + ',' + BROCKS_DEN.lng + ');';
+        }).join(''),
+        useCenter: true,
+        typeLabel: function(tags){
+          var labels = { supermarket: 'Supermarket', greengrocer: 'Greengrocer', farm: 'Farm shop', butcher: 'Butcher', bakery: 'Bakery', deli: 'Deli', general: 'General store' };
+          return labels[tags.shop] || 'Convenience store';
+        }
+      },
+      attractions: {
+        title: 'Attractions',
+        empty: 'No nearby attractions found.',
+        color: '#3d6b8a',
+        query:
+          'node["tourism"~"attraction|viewpoint|museum|gallery"](around:8000,' + BROCKS_DEN.lat + ',' + BROCKS_DEN.lng + ');' +
+          'way["tourism"~"attraction|viewpoint|museum|gallery"](around:8000,' + BROCKS_DEN.lat + ',' + BROCKS_DEN.lng + ');' +
+          'node["leisure"="park"](around:8000,' + BROCKS_DEN.lat + ',' + BROCKS_DEN.lng + ');' +
+          'node["historic"](around:8000,' + BROCKS_DEN.lat + ',' + BROCKS_DEN.lng + ');' +
+          'way["historic"](around:8000,' + BROCKS_DEN.lat + ',' + BROCKS_DEN.lng + ');',
+        useCenter: true,
+        typeLabel: function(tags){
+          if(tags.leisure === 'park') return 'Park';
+          if(tags.historic) return 'Historic site';
+          if(tags.tourism === 'museum' || tags.tourism === 'gallery') return 'Museum / Gallery';
+          if(tags.tourism === 'viewpoint') return 'Viewpoint';
+          return 'Attraction';
+        }
+      }
+    };
+
+    var activeCategory = null;
+    var categoryMarkers = [];
+
+    function clearCategoryMarkers(){
+      categoryMarkers.forEach(function(m){ map.removeLayer(m); });
+      categoryMarkers = [];
+    }
+
+    // Backup source (Nominatim, also free) used when the public Overpass servers are busy or down
+    var NOMINATIM_SEARCH = {
+      restaurants: {
+        terms: ['pub', 'cafe', 'restaurant', 'bar'],
+        allow: function(r){ return r.category === 'amenity' && /^(pub|bar|cafe|restaurant)$/.test(r.type); }
+      },
+      groceries: {
+        terms: ['supermarket', 'convenience store', 'greengrocer', 'farm shop', 'butcher', 'bakery'],
+        allow: function(r){ return r.category === 'shop' && /^(supermarket|convenience|greengrocer|general|farm|butcher|bakery|deli)$/.test(r.type); }
+      },
+      attractions: {
+        terms: ['museum', 'castle', 'park', 'viewpoint', 'attraction', 'monument'],
+        allow: function(r){
+          return r.category === 'historic' ||
+            (r.category === 'leisure' && r.type === 'park') ||
+            (r.category === 'tourism' && /^(attraction|viewpoint|museum|gallery)$/.test(r.type));
+        }
+      }
+    };
+
+    function withTimeout(url, opts, ms){
+      var ctl = new AbortController();
+      var timer = setTimeout(function(){ ctl.abort(); }, ms);
+      opts = opts || {};
+      opts.signal = ctl.signal;
+      return fetch(url, opts).then(function(res){ clearTimeout(timer); return res; }, function(err){ clearTimeout(timer); throw err; });
+    }
+
+    function fromOverpass(cat){
+      var q = '[out:json][timeout:25];(' + cat.query + ');' + (cat.useCenter ? 'out center;' : 'out body;');
+      return withTimeout('https://overpass-api.de/api/interpreter', { method: 'POST', body: 'data=' + encodeURIComponent(q) }, 9000)
+        .then(function(res){ if(!res.ok) throw new Error('overpass'); return res.json(); })
+        .then(function(data){
+          return (data.elements || [])
+            .filter(function(el){ return el.tags && el.tags.name; })
+            .map(function(el){
+              var c = (el.type === 'node') ? { lat: el.lat, lng: el.lon } : { lat: el.center.lat, lng: el.center.lon };
+              return { name: el.tags.name, tags: el.tags, lat: c.lat, lng: c.lng };
+            });
+        });
+    }
+
+    function fromNominatim(key){
+      var cfg = NOMINATIM_SEARCH[key];
+      var d = 0.13;
+      var viewbox = [BROCKS_DEN.lng - d * 1.6, BROCKS_DEN.lat + d, BROCKS_DEN.lng + d * 1.6, BROCKS_DEN.lat - d].join(',');
+      var seen = {};
+      var found = [];
+      // one search at a time, as Nominatim's usage policy asks
+      return cfg.terms.reduce(function(chain, term){
+        return chain.then(function(){
+          return withTimeout('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=20&bounded=1&viewbox=' + viewbox + '&q=' + encodeURIComponent(term), null, 9000)
+            .then(function(res){ if(!res.ok) throw new Error('nominatim'); return res.json(); })
+            .then(function(rows){
+              rows.forEach(function(r){
+                if(!cfg.allow(r) || seen[r.osm_type + r.osm_id]) return;
+                seen[r.osm_type + r.osm_id] = true;
+                var tags = { name: r.name || r.display_name.split(',')[0] };
+                tags[r.category] = r.type;
+                if(r.name) found.push({ name: r.name, tags: tags, lat: parseFloat(r.lat), lng: parseFloat(r.lon) });
+              });
+            });
+        });
+      }, Promise.resolve()).then(function(){ return found; });
+    }
+
+    function readCache(key){
+      try{
+        var c = JSON.parse(localStorage.getItem('bd-places-v2-' + key));
+        if(c && Date.now() - c.t < 86400000) return c.places;
+      }catch(e){}
+      return null;
+    }
+    function writeCache(key, places){
+      try{ localStorage.setItem('bd-places-v2-' + key, JSON.stringify({ t: Date.now(), places: places })); }catch(e){}
+    }
+
+    function fetchCategory(key, cb){
+      var cat = CATEGORIES[key];
+      if(cat.places){ cb(cat.places); return; }
+
+      function finish(raw){
+        var origin = L.latLng(BROCKS_DEN.lat, BROCKS_DEN.lng);
+        var places = raw.map(function(p){
+          var pos = L.latLng(p.lat, p.lng);
+          return { name: p.name, tags: p.tags, pos: pos, distanceMeters: origin.distanceTo(pos) };
+        });
+        places.sort(function(a, b){ return a.distanceMeters - b.distanceMeters; });
+        places = places.slice(0, 16);
+        cat.places = places;
+        cb(places);
+      }
+
+      var cached = readCache(key);
+      if(cached){ finish(cached); return; }
+
+      fromOverpass(cat)
+        .catch(function(){ return fromNominatim(key); })
+        .then(function(raw){
+          if(raw.length) writeCache(key, raw);
+          finish(raw);
+        })
+        .catch(function(){ cb(null); });
+    }
+
+    function openCategory(key){
+      var cat = CATEGORIES[key];
+      activeCategory = key;
+      backLabel.textContent = cat.title;
+      categoriesEl.hidden = true;
+      listViewEl.hidden = false;
+      listEl.innerHTML = '';
+      statusEl.hidden = false;
+      statusEl.textContent = 'Loading ' + cat.title.toLowerCase() + '…';
+      listEl.appendChild(statusEl);
+      clearCategoryMarkers();
+
+      fetchCategory(key, function(places){
+        if(activeCategory !== key) return;
+        if(places === null){
+          statusEl.textContent = 'Couldn’t load ' + cat.title.toLowerCase() + ' right now — try again in a moment.';
+          return;
+        }
+        renderList(places, cat);
+      });
+    }
+
+    function renderList(places, cat){
+      if(!places.length){
+        statusEl.textContent = cat.empty;
+        return;
+      }
+      listEl.innerHTML = '';
+      var cards = [];
+
+      places.forEach(function(place){
+        var typeText = cat.typeLabel(place.tags);
+        var card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'place-card';
+        card.innerHTML =
+          '<div class="place-card-top">' +
+            '<span class="place-name">' + place.name + '</span>' +
+            '<span class="place-distance">' + milesFrom(place.distanceMeters) + '</span>' +
+          '</div>' +
+          '<div class="place-meta"><span class="place-dot" style="background:' + cat.color + '"></span><span class="place-type">' + typeText + '</span></div>';
+
+        var pinIcon = L.divIcon({ className: '', html: '<div class="place-pin" style="background:' + cat.color + '"></div>', iconSize: [14, 14], iconAnchor: [7, 7] });
+        var marker = L.marker(place.pos, { icon: pinIcon }).addTo(map);
+        marker.bindPopup('<b>' + place.name + '</b>' + typeText);
+        categoryMarkers.push(marker);
+
+        function activate(){
+          cards.forEach(function(c){ c.classList.remove('is-active'); });
+          card.classList.add('is-active');
+          map.panTo(place.pos);
+          marker.openPopup();
+        }
+
+        card.addEventListener('click', activate);
+        marker.on('click', activate);
+
+        listEl.appendChild(card);
+        cards.push(card);
+      });
+    }
+
+    // ---- Search bar: click/focus reveals the 3 categories; Enter searches a place ----
+    function showCategories(){
+      dropEl.hidden = false;
+      categoriesEl.hidden = false;
+      listViewEl.hidden = true;
+    }
+
+    searchInput.addEventListener('focus', showCategories);
+    document.getElementById('mapSearch').addEventListener('click', showCategories);
+
+    document.addEventListener('click', function(e){
+      if(!panelEl.contains(e.target)) dropEl.hidden = true;
+    });
+
+    categoriesEl.addEventListener('click', function(e){
+      var btn = e.target.closest('.map-cat-btn');
+      if(btn) openCategory(btn.dataset.cat);
+    });
+
+    backBtn.addEventListener('click', function(){
+      categoriesEl.hidden = false;
+      listViewEl.hidden = true;
+      clearCategoryMarkers();
+      activeCategory = null;
+    });
+
+    searchInput.addEventListener('keydown', function(e){
+      if(e.key !== 'Enter') return;
+      e.preventDefault();
+      var q = searchInput.value.trim();
+      if(!q) return;
+      fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(q))
+        .then(function(res){ return res.json(); })
+        .then(function(results){
+          if(!results.length) return;
+          map.setView([parseFloat(results[0].lat), parseFloat(results[0].lon)], 14);
+          dropEl.hidden = true;
+        });
+    });
+  })();
+
+</script>
+
+</body>
+</html>
